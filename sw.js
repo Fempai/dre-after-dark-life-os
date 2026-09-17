@@ -1,4 +1,4 @@
-const C='dre-life-os-v1.0.2';
+const C='dre-life-os-v1.0.3';
 const CORE=['./','index.html','styles.css','manifest.webmanifest'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==C).map(k=>caches.delete(k))))])));
