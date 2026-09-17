@@ -3,19 +3,34 @@
 const SB='https://alwtccdiyudsucfioahr.supabase.co',KEY='sb_publishable_v1AZYAfBP6vA0nrxcWQI6g_sWFt5PYU',APP='https://fempai.github.io/dre-after-dark-life-os/';
 let client=null,readyResolve;const ready=new Promise(r=>readyResolve=r);
 async function loadSDK(){if(window.supabase)return;const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';await new Promise((r,j)=>{s.onload=r;s.onerror=j;document.head.appendChild(s)})}
+function safeCallbackReport(){
+ const hash=new URLSearchParams(location.hash.replace(/^#/,'')),query=new URLSearchParams(location.search);
+ const hasAccess=hash.has('access_token'),hasRefresh=hash.has('refresh_token'),hasCode=query.has('code');
+ const error=query.get('error_description')||hash.get('error_description')||query.get('error')||hash.get('error');
+ return {returnedFromOAuth:hasAccess||hasRefresh||hasCode||!!error,hasAccessToken:hasAccess,hasRefreshToken:hasRefresh,hasAuthorizationCode:hasCode,error:error||null,urlOrigin:location.origin,urlPath:location.pathname};
+}
+function showDiagnostics(report,session,sessionError){
+ const cloud=document.getElementById('cloudState')?.closest('article');if(!cloud)return;
+ let box=document.getElementById('authDiagnostics');if(!box){box=document.createElement('div');box.id='authDiagnostics';box.style.cssText='margin-top:1rem;padding:1rem;border:1px solid rgba(255,255,255,.18);border-radius:14px;font-size:.9rem;white-space:pre-wrap;word-break:break-word';cloud.appendChild(box)}
+ const lines=['AUTH DIAGNOSTICS',`OAuth return detected: ${report.returnedFromOAuth?'YES':'NO'}`,`Access token returned: ${report.hasAccessToken?'YES':'NO'}`,`Refresh token returned: ${report.hasRefreshToken?'YES':'NO'}`,`Authorization code returned: ${report.hasAuthorizationCode?'YES':'NO'}`,`Supabase session: ${session?'YES':'NO'}`,`Session user: ${session?.user?.email||'none'}`,`Callback error: ${report.error||'none'}`,`Session error: ${sessionError||'none'}`,`Return location: ${report.urlOrigin}${report.urlPath}`];
+ box.textContent=lines.join('\n');
+}
 async function boot(){
+ const callbackReport=safeCallbackReport();
  await loadSDK();
  client=window.supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}});
  upgrade();
  client.auth.onAuthStateChange((event,session)=>{setTimeout(async()=>{await paint(session);if(event==='SIGNED_IN'&&session)await restoreCloudIfNeeded(session)},0)});
- const {data:{session},error}=await client.auth.getSession();
+ const result=await client.auth.getSession(),session=result.data.session,error=result.error;
+ showDiagnostics(callbackReport,session,error?.message||null);
  if(error)paintError(error.message);else{await paint(session);if(session)await restoreCloudIfNeeded(session)}
  readyResolve(client);
 }
 async function signIn(){
  const x=document.getElementById('cloudState');if(x)x.textContent='Opening Google sign-in…';
- const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:APP,scopes:'openid email profile'}});
- if(error)paintError(error.message);
+ const {data,error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:APP,scopes:'openid email profile'}});
+ if(error){paintError(error.message);showDiagnostics({...safeCallbackReport(),error:error.message},null,error.message)}
+ else if(data?.url){sessionStorage.setItem('lifeOSOAuthStarted','1')}
 }
 async function signOut(){await client.auth.signOut();await paint(null)}
 function localState(){try{return JSON.parse(localStorage.getItem('dreLifeOS')||'null')}catch{return null}}
