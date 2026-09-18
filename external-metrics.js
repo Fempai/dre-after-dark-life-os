@@ -1,18 +1,23 @@
 /* Dre After Dark · Life OS — External Publishing Metrics Bridge */
-(()=>{const KEY='dreLifeOS_externalMetrics',II='dreLifeOS_ii',SB='https://alwtccdiyudsucfioahr.supabase.co',SB_KEY='sb_publishable_v1AZYAfBP6vA0nrxcWQI6g_sWFt5PYU';
+(()=>{const BUILD='igdiag-2026-09-18-01',KEY='dreLifeOS_externalMetrics',II='dreLifeOS_ii',SB='https://alwtccdiyudsucfioahr.supabase.co',SB_KEY='sb_publishable_v1AZYAfBP6vA0nrxcWQI6g_sWFt5PYU';
+const diag=(stage,detail='')=>{const payload={build:BUILD,stage,detail:String(detail||''),at:new Date().toISOString()};try{localStorage.setItem('dreLifeOS_igDiag',JSON.stringify(payload))}catch{}window.dispatchEvent(new CustomEvent('lifeos:igdiag',{detail:payload}));return payload};
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{"wordpress":{"site":"drebattles.wordpress.com"},"instagram":{}}')}catch{return{wordpress:{site:'drebattles.wordpress.com'},instagram:{}}}},save=d=>localStorage.setItem(KEY,JSON.stringify(d)),ii=()=>{try{return JSON.parse(localStorage.getItem(II)||'{"books":[],"content":[],"metrics":[]}')}catch{return{books:[],content:[],metrics:[]}}},saveII=d=>{localStorage.setItem(II,JSON.stringify(d));window.LifeSignals?.reconcile?.();window.dispatchEvent(new CustomEvent('lifeos:externalmetrics'))},norm=s=>String(s||'').toLowerCase().replace(/<[^>]*>/g,'').replace(/&[^;]+;/g,' ').replace(/[^a-z0-9]+/g,' ').trim(),match=(title,list)=>{let t=norm(title);return list.find(x=>norm(x.title)===t)||list.find(x=>t&&norm(x.title).includes(t))||list.find(x=>norm(x.title)&&t.includes(norm(x.title)))};
 async function callBackend(fn,action,extra={}){
-  if(!window.LifeAuth) throw Error('Life OS authentication has not loaded. Refresh the page and try again.');
-  await window.LifeAuth.ready;
+  diag(`${fn}:${action}:start`);
+  if(!window.LifeAuth){diag(`${fn}:${action}:error`,'LifeAuth missing');throw Error('Life OS authentication has not loaded. Refresh the page and try again.');}
+  diag(`${fn}:${action}:auth-ready-wait`);await window.LifeAuth.ready;diag(`${fn}:${action}:auth-ready`);
   const session=await window.LifeAuth.getSession();
-  if(!session?.access_token) throw Error('Sign in with Google first.');
+  if(!session?.access_token){diag(`${fn}:${action}:error`,'No signed-in session');throw Error('Sign in with Google first.');}
+  diag(`${fn}:${action}:session-ok`);
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
   try{
+    diag(`${fn}:${action}:fetch-start`);
     const r=await fetch(`${SB}/functions/v1/${fn}`,{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`,apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:controller.signal});
+    diag(`${fn}:${action}:response`,String(r.status));
     const text=await r.text();let j={};try{j=text?JSON.parse(text):{}}catch{j={error:text||`HTTP ${r.status}`}}
     if(!r.ok)throw Error(j.error||j.message||`${fn} ${r.status}`);
-    return j;
-  }catch(e){if(e?.name==='AbortError')throw Error(`${fn} request timed out after 15 seconds.`);throw e}finally{clearTimeout(timer)}
+    diag(`${fn}:${action}:success`,j.url?'authorization URL received':'response received');return j;
+  }catch(e){if(e?.name==='AbortError'){diag(`${fn}:${action}:timeout`,'15 seconds');throw Error(`${fn} request timed out after 15 seconds.`)}diag(`${fn}:${action}:error`,e?.message||e);throw e}finally{clearTimeout(timer)}
 }
 const callWP=(action,extra={})=>callBackend('wordpress',action,extra),callIG=(action,extra={})=>callBackend('instagram',action,extra);
 async function wordpressStatus(){return callWP('status')}
@@ -23,7 +28,7 @@ async function syncWordPress(){let j=await callWP('sync'),m=mergePosts(j.posts||
 function ingestWordPressStats(rows){let d=ii(),count=0;rows.forEach(r=>{let c=d.content.find(x=>String(x.externalId)===String(r.postId))||match(r.title,d.content);if(!c)return;let id=`wpmetric-${c.id}-${r.at||Date.now()}`;if(d.metrics.some(x=>x.id===id))return;d.metrics.push({id,at:r.at||new Date().toISOString(),contentId:c.id,name:c.title,platform:'WordPress',source:'api',views:+r.views||0,likes:+r.likes||0,comments:+r.comments||0,saves:0,shares:+r.reblogs||0,visitors:+r.visitors||0,emailOpens:+r.email_opens||0,emailClicks:+r.email_clicks||0});count++});saveII(d);return count}
 function ingestInstagramMedia(media,at=new Date().toISOString()){let d=ii(),count=0,added=0,linked=0;media.forEach(r=>{let title=r.title||r.caption?.split('\n')[0]?.slice(0,100)||`Instagram ${r.media_type||'post'}`,c=d.content.find(x=>String(x.externalId)===String(r.id))||match(title,d.content);if(!c){c={id:`ig-${r.id}`,title,type:r.media_product_type==='REELS'||r.media_type==='VIDEO'?'Reel':'Instagram Post',status:'Published',platform:'Instagram',externalId:String(r.id),externalUrl:r.permalink||'',publishedAt:r.timestamp||at,createdAt:r.timestamp||at,noteIds:[]};d.content.push(c);added++}else{c.platform='Instagram';c.externalId=String(r.id);c.externalUrl=r.permalink||c.externalUrl;c.publishedAt=c.publishedAt||r.timestamp;c.status='Published';linked++}let m=r.metrics||r,id=`igmetric-${r.id}-${at}`;if(!d.metrics.some(x=>x.id===id)){d.metrics.push({id,at,contentId:c.id,name:c.title,platform:'Instagram',source:'api',views:+(m.views??m.reach??m.impressions)||0,reach:+m.reach||0,likes:+m.likes||0,comments:+m.comments||0,saves:+(m.saved??m.saves)||0,shares:+m.shares||0});count++}});saveII(d);return{metrics:count,added,linked}}
 async function instagramStatus(){return callIG('status')}
-async function connectInstagram(){let j=await callIG('authorize');if(!j?.url)throw Error(j?.error||'Instagram authorization URL was not returned by the backend.');if(!/^https:\/\//i.test(j.url))throw Error('Instagram authorization URL returned by the backend is invalid.');location.assign(j.url);return j}
+async function connectInstagram(){diag('instagram:connect:called');let j=await callIG('authorize');if(!j?.url){diag('instagram:connect:error','No authorization URL');throw Error(j?.error||'Instagram authorization URL was not returned by the backend.')}if(!/^https:\/\//i.test(j.url)){diag('instagram:connect:error','Invalid authorization URL');throw Error('Instagram authorization URL returned by the backend is invalid.')}diag('instagram:connect:redirecting',new URL(j.url).hostname);location.assign(j.url);return j}
 async function disconnectInstagram(instagram_account_id){return callIG('disconnect',instagram_account_id?{instagram_account_id}:{})}
 async function syncInstagram(instagram_account_id){let j=await callIG('sync',instagram_account_id?{instagram_account_id}:{}),summary={metrics:0,added:0,linked:0};(j.results||[]).forEach(r=>{if(r.error)return;let x=ingestInstagramMedia(r.media||[],r.synced_at);summary.metrics+=x.metrics;summary.added+=x.added;summary.linked+=x.linked});return{...j,...summary}}
-function config(){return load()}function setConfig(patch){let d=load();Object.keys(patch).forEach(k=>d[k]={...(d[k]||{}),...patch[k]});save(d);return d}window.ExternalMetrics={config,setConfig,wordpressStatus,connectWordPress,disconnectWordPress,syncWordPress,syncWordPressPosts:syncWordPress,ingestWordPressStats,instagramStatus,connectInstagram,disconnectInstagram,syncInstagram,ingestInstagramMedia};})();
+function config(){return load()}function setConfig(patch){let d=load();Object.keys(patch).forEach(k=>d[k]={...(d[k]||{}),...patch[k]});save(d);return d}window.ExternalMetrics={build:BUILD,diag,config,setConfig,wordpressStatus,connectWordPress,disconnectWordPress,syncWordPress,syncWordPressPosts:syncWordPress,ingestWordPressStats,instagramStatus,connectInstagram,disconnectInstagram,syncInstagram,ingestInstagramMedia};diag('bridge:loaded');})();
