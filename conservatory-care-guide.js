@@ -1,0 +1,28 @@
+/* Dre After Dark · Life OS — Conservatory Care Guide */
+(()=>{'use strict';
+const profiles=[
+[/Audrey/i,['Bright indirect; gentle morning sun','Let top 2–3 in dry','Average home humidity; appreciates 40–60%+','Fast-draining, airy soil','Ficus benghalensis · avoid soggy roots and abrupt light changes']],
+[/Thai Constellation/i,['Very bright indirect; gentle sun','Let top 1/3–1/2 dry','Moderate–high, ideally 50–70%','Chunky aroid mix','Monstera deliciosa · more light supports variegated growth']],
+[/White Wizard|Pink Princess/i,['Bright indirect','Let top 1/3–1/2 dry','Moderate–high, ideally 50–70%','Chunky aroid mix','Philodendron · avoid keeping soil continuously wet']],
+[/Moonlight|Silver Satin/i,['Bright indirect; tolerates medium','Let top 1/3–1/2 dry','Average–moderate, 40–60%+','Airy, well-draining mix','Scindapsus · avoid prolonged wet soil']],
+[/Siam Aurora/i,['Medium–bright indirect','Let top 1–2 in dry','Average–moderate, 40–60%+','Loose, well-draining mix','Aglaonema · keep warm; avoid cold drafts']],
+[/Lime Prayer/i,['Medium–bright indirect; no harsh sun','Keep lightly moist; top ~1 in may dry','High preferred, 50–70%+','Moisture-retentive but draining mix','Maranta · dislikes hard drying and mineral-heavy water']],
+[/Peace Lily/i,['Medium–bright indirect; tolerates lower light','Water when top ~1 in dries; evenly moist, not soggy','Moderate–high, 50%+ helpful','Rich but well-draining mix','Spathiphyllum · lower light usually means slower growth/fewer blooms']],
+[/Button Fern/i,['Medium–bright indirect','Keep lightly/evenly moist; do not bone-dry','Moderate–high, 50%+','Organic, moisture-retentive but draining','Fern · protect from hot direct sun and dry air']],
+[/Variegated Ivy/i,['Bright indirect; some gentle sun','Let top ~1 in dry','Average–moderate; airflow matters','Well-draining mix','Hedera · variegation needs good light; avoid chronic sogginess']],
+[/String of Bananas/i,['Very bright light; several hours gentle/direct sun if acclimated','Dry thoroughly between waterings','Low–average; no special humidity needed','Gritty succulent mix','Curio/Senecio · overwatering is the bigger risk']],
+[/Baby Rubber|Variegated Peperomia/i,['Medium–bright indirect','Let top 1/2 of pot dry','Average home humidity','Loose, fast-draining mix','Peperomia · semi-succulent leaves store water']],
+[/\bZZ\b/i,['Low–bright indirect; best growth in brighter light','Dry fully or nearly fully between waterings','Average home humidity','Very fast-draining mix','Zamioculcas · drought tolerant; chronic wet soil is risky']],
+[/Orchid/i,['Bright indirect','Water when roots turn silvery/media is nearly dry','Moderate, ~40–60% with airflow','Chunky orchid bark; not regular potting soil','Phalaenopsis-type care · drain completely; keep crown from sitting wet']],
+[/King Anthurium/i,['Bright indirect','Keep lightly moist; let surface begin to dry','High preferred, 60%+','Very airy aroid mix','Anthurium veitchii · humidity and airflow help leaf quality']],
+[/Polka Dot/i,['Bright indirect','Keep lightly moist; do not repeatedly wilt','Moderate–high, 50%+','Rich, well-draining mix','Hypoestes · pinch growth to encourage bushiness']],
+[/White Stripe Dracaena/i,['Medium–bright indirect; tolerates medium','Let top 1/3–1/2 dry','Average home humidity','Well-draining potting mix','Dracaena · sensitive to overwatering; filtered water can help leaf tips']],
+[/Elephant Ear|Beauty|Coral|Ruffles|Magic/i,['Very bright indirect; some gentle sun if acclimated','Keep evenly moist while actively growing; surface may slightly dry','High preferred, 60%+','Rich, airy, moisture-retentive mix','Alocasia/elephant-ear type · warmth, humidity and drainage matter']],
+[/Succulents|Cacti/i,['Very bright light/direct sun as species allows','Dry thoroughly between waterings','Low humidity preferred','Gritty cactus/succulent mix','Use the individual species profile when known; this is group-level guidance']]
+];
+function care(name){for(const [r,v] of profiles)if(r.test(name||''))return v;return ['Bright indirect is a safe starting point until identified','Check species before choosing a watering threshold','Average home humidity until identified','Well-draining mix appropriate to species','Unclassified specimen · add/confirm species for a precise care profile']}
+function card(p){let c=care(p.nickname);return `<div class="care-guide"><p class="eyebrow">CARE COMPASS</p><div class="care-grid"><span>☀️ <b>Light</b><br>${c[0]}</span><span>💧 <b>Water</b><br>${c[1]}</span><span>💨 <b>Humidity</b><br>${c[2]}</span><span>🪴 <b>Soil</b><br>${c[3]}</span></div><p class="quiet">${c[4]}</p></div>`}
+function enhance(){let grid=document.getElementById('plantGrid');if(!grid||!window.db)return;[...grid.querySelectorAll('.plant')].forEach((node,i)=>{let visible=[...(window.LifeConservatoryOrganizer?.visiblePlants?.()||window.db.plants||[])],p=visible[i];if(p&&!node.querySelector('.care-guide'))node.querySelector('h3')?.insertAdjacentHTML('afterend',card(p))})}
+function modalCare(){let m=document.getElementById('modalContent');if(!m||!m.querySelector('.eyebrow')||m.querySelector('.care-guide'))return;let title=m.querySelector('h2')?.textContent,p=(window.db?.plants||[]).find(x=>x.nickname===title);if(p)m.querySelector('h2').insertAdjacentHTML('afterend',card(p))}
+new MutationObserver(()=>{enhance();modalCare()}).observe(document.body,{childList:true,subtree:true});setTimeout(enhance,300);window.LifePlantCare={care,profiles};
+})();
