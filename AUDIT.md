@@ -1,6 +1,6 @@
 # Dre After Dark · Life OS — Build & Audit Ledger
 
-Last updated: 2026-09-18
+Last updated: 2026-09-18 19:20 PDT
 
 ## Status vocabulary
 - VERIFIED — implementation inspected and wiring confirmed.
@@ -11,12 +11,12 @@ Last updated: 2026-09-18
 
 ## Current sequence
 1. Whole-app integrity audit — IN PROGRESS
-2. Unified Life OS data architecture — IN PROGRESS
+2. Unified Life OS data architecture — BUILT / REGRESSION AUDIT IN PROGRESS
 3. Personal Labs 2.0 — PARTIAL
 4. Smart Scanner + Picture Recognizer — PARTIAL / vision backend BLOCKED
 5. Conservatory intelligence — PARTIAL
-6. Command Center tools — PARTIAL
-7. Cross-domain intelligence — PARTIAL
+6. Command Center tools — PARTIAL; Data Health BUILT
+7. Cross-domain intelligence — PARTIAL; Personal Labs + Command Center ingestion BUILT
 8. Adaptive Today 2.0 — PARTIAL
 9. Life timeline / Chronicle — PARTIAL
 10. Comparison Laboratory — NOT BUILT
@@ -41,24 +41,42 @@ Last updated: 2026-09-18
 ### Confirmed
 - `index.html` loads the core app and all currently registered Life OS modules in a deterministic order.
 - Core state is stored in `dreLifeOS`.
-- `integration.js` already provides a normalized signal layer, signal links, calendar semantics, I&I ingestion, day profiles, comparisons, and hypothesis candidates.
-- Personal Labs now stores under `dreLifeOS.personalLabs` and migrates the earlier `dreLifeOS_personalLabs` store.
-- Command Center now stores under `dreLifeOS.commandCenter` and migrates the earlier `dreLifeOS_commandCenter` store.
-- Personal Labs and Command Center emit `lifeos:data-changed` after writes.
-- Existing plant records already support care events, notes, status, photos, and growth-film playback.
+- `integration.js` schema 6 provides normalized signals, signal links, calendar semantics, I&I ingestion, Personal Labs ingestion, Command Center ingestion, day profiles, comparisons, and hypothesis candidates.
+- Personal Labs stores under `dreLifeOS.personalLabs` and migrates the earlier `dreLifeOS_personalLabs` store.
+- Command Center stores under `dreLifeOS.commandCenter` and migrates the earlier `dreLifeOS_commandCenter` store.
+- Personal Labs and Command Center emit `lifeos:data-changed` after writes; LifeSignals now listens for that event and schedules reconciliation.
+- Existing plant records support care events, notes, status, photos, and growth-film playback.
+- Data Health diagnostics now inspect IDs, dates, duplicate IDs, specimen structure, unresolved plant scans, local storage size, signal schema, and reconciliation status.
 
-### Integrity findings
-1. `app.js` keeps a long-lived in-memory `db` object while newer modules independently read/write `dreLifeOS`. A later core `persist()` can overwrite fields added by another module if the in-memory object is stale. This is the highest-priority data-integrity risk.
-2. Personal Labs photo compression is an improvement, but images are still base64 inside localStorage. Large photo histories can exceed browser storage quotas. Media storage needs IndexedDB/cloud-object storage later.
-3. Smart Scanner capture/classification is functional, but visual recognition is not. It must remain labeled PARTIAL until a real vision backend is connected.
-4. Command Center currently provides real capture only for Chronicle, Cabinet, and Experiments. Compare Mode, Data Explorer, Dashboard Builder, Data Health, and Private Story Studio are descriptions/shells, not completed tools.
-5. The unified signal layer currently ingests core events, calendar, care/journal/home, I&I and instrumentation. Personal Labs and Command Center need explicit structured signal ingestion so their richer records are not represented only through generic events.
-6. Conservatory scanner items enter a `scanInbox` and require a specimen-link workflow; that linking UI is not yet complete.
+### Resolved findings
+1. **Stale-write clobbering protection — BUILT.** The legacy core keeps a long-lived `db` object. A canonical merge-on-write guard now executes from `reset-once.js` before `app.js`, preserving newer namespaces when an older core snapshot writes to `dreLifeOS`.
+2. **Personal Labs + Command Center signal isolation — RESOLVED.** Their structured records now enter LifeSignals directly, not only as generic event echoes.
+3. **Signal refresh after module writes — RESOLVED.** `lifeos:data-changed` now triggers scheduled reconciliation.
+4. **Data-health visibility — BUILT.** Command Center now contains a functional Data Health diagnostic rather than a descriptive placeholder.
+
+### Open integrity / architecture findings
+1. Personal Labs images and scanner images are compressed but still stored as base64 in localStorage. Large histories can exceed browser quotas. Media needs IndexedDB and/or cloud object storage.
+2. Smart Scanner capture and manual classification are functional, but automated visual recognition is not. It remains PARTIAL until a real vision backend is connected.
+3. Command Center still has descriptive shells for Compare Mode, Data Explorer, Dashboard Builder, and Private Story Studio.
+4. Conservatory scanner items enter `scanInbox`; the specimen-link workflow is not yet complete.
+5. The state guard is a compatibility layer. Long-term cleanup should migrate older core writes to `LifeStore.mutate()` rather than depending permanently on merge interception.
+6. Browser/device regression testing is still required for the state-guard change and Data Health UI.
+
+## Work completed in this pass
+- Created the persistent build/audit ledger.
+- Upgraded unified signals from schema 5 to schema 6.
+- Added Personal Labs logs, progress photos, scanner records, Chronicle, Cabinet, and Command Center experiments to unified signal ingestion.
+- Added `lifeos:data-changed` reconciliation.
+- Added canonical merge-on-write protection before core app boot.
+- Added functional Data Health diagnostics to Command Center.
+- Removed the redundant standalone state-guard file after moving the guard into the pre-core bootstrap path.
 
 ## Next implementation targets
-- Protect the canonical store from stale-write clobbering and establish shared state/write helpers.
-- Extend LifeSignals ingestion for Personal Labs + Command Center.
-- Add schema/version migration bookkeeping and data-health diagnostics.
-- Regression-audit core app behavior after the state changes.
+1. Regression-audit the canonical state guard and signal reconciliation behavior.
+2. Build the Conservatory scanner → specimen linking workflow.
+3. Expand Personal Labs 2.0 structured fields beyond free-text logging.
+4. Build Compare Mode on top of the existing normalized signals/day-profile engine.
+5. Build Data Explorer and universal retrieval/search.
+6. Move photo/media persistence away from localStorage.
 
 This ledger is intentionally conservative: existence of a file does not equal completion of the promised feature.
