@@ -1,6 +1,6 @@
 # Dre After Dark · Life OS — Build & Audit Ledger
 
-Last updated: 2026-09-18 evening PDT
+Last updated: 2026-09-18 21:24 PDT
 
 ## Status vocabulary
 - VERIFIED — implementation inspected and wiring confirmed.
@@ -11,85 +11,80 @@ Last updated: 2026-09-18 evening PDT
 
 ## Current sequence
 1. Whole-app integrity audit — IN PROGRESS
-2. Unified Life OS data architecture — BUILT / REGRESSION AUDIT IN PROGRESS
-3. Personal Labs 2.0 — BUILT V1 / longitudinal structured tracking VERIFIED
-4. Smart Scanner + Picture Recognizer — PARTIAL / vision backend BLOCKED
-5. Conservatory intelligence — PARTIAL; scanner → specimen linking BUILT
-6. Command Center tools — PARTIAL; Data Health, Compare Mode, Data Explorer BUILT
-7. Cross-domain intelligence — PARTIAL; Personal Labs + Command Center ingestion BUILT
-8. Adaptive Today 2.0 — PARTIAL
-9. Life timeline / Chronicle — PARTIAL
-10. Comparison Laboratory — BUILT V1 / needs expansion + regression QA
-11. Universal search / retrieval — BUILT V1 / needs richer indexing + regression QA
-12. Calendar + temporal intelligence — PARTIAL
+2. Unified Life OS data architecture — BUILT / regression audit in progress
+3. Personal Labs 2.0 — BUILT V1 / structured tracking VERIFIED
+4. Smart Scanner + Picture Recognizer — PARTIAL / capture + filing BUILT; automated vision backend BLOCKED
+5. Conservatory intelligence — BUILT V1 / scanner linking + longitudinal specimen summaries
+6. Command Center tools — BUILT V1 / Data Health, Compare, Explorer, Dashboard Builder, Story Studio
+7. Cross-domain intelligence — BUILT V1 / continued depth planned
+8. Adaptive Today 2.0 — BUILT advanced V1 / continued tuning + QA
+9. Life timeline / Chronicle — BUILT V1 / unified 30-day timeline + temporal summaries
+10. Comparison Laboratory — BUILT V1 / expansion + QA remains
+11. Universal search / retrieval — BUILT V2 / expanded structured indexing
+12. Calendar + temporal intelligence — BUILT V1 / Google backend integration + Chronicle temporal layer; QA remains
 13. Household / Estate expansion — PARTIAL
-14. Finance / purchase planning — NOT BUILT
-15. Career / Academic Lab — NOT BUILT
-16. Wardrobe / Event / Style — NOT BUILT
-17. Reading + I&I final integration — PARTIAL
+14. Finance / purchase planning — BUILT V1 / QA + deeper calculators remain
+15. Career / Academic Lab — BUILT V1 / QA + deeper workflow remains
+16. Wardrobe / Event / Style — BUILT V1 / QA + deeper workflow remains
+17. Reading + I&I final integration — PARTIAL / substantial implementation exists
 18. External social metrics — PARTIAL / Meta authorization BLOCKED
 19. Cloud sync / identity / backup — PARTIAL
 20. PWA / phone experience — PARTIAL
-21. Privacy / data controls — NOT BUILT
-22. Performance / storage engineering — PARTIAL
+21. Privacy / data controls — BUILT V1 / QA remains
+22. Performance / storage engineering — BUILT V1 media architecture / deeper migration + QA remains
 23. Accessibility + UX polish — PARTIAL
 24. Final systems integration audit — NOT STARTED
 25. Real-world QA / release audit — NOT STARTED
 
-## Audit 01 — architecture and integrity
+## Confirmed architecture
+- `index.html` loads core and registered modules in deterministic order.
+- Canonical state is `dreLifeOS`; state guard protects against stale legacy writes.
+- `integration.js` provides normalized LifeSignals and cross-domain semantics.
+- New Personal Labs and scanner photography routes through IndexedDB `LifeMedia` with fallback behavior.
+- Personal Labs structured records cover Skin, Hair, Body/Nutrition, Kitchen and Beauty.
+- Finance, Career/Academic and Wardrobe/Event/Style have persistent structured V1 labs.
+- Command Center has functional Data Health, Compare Mode, Data Explorer, Dashboard Builder and Private Story Studio.
+- Chronicle V1 builds a unified recent timeline and descriptive temporal activity summary from Life OS events.
+- Conservatory Intelligence V1 provides per-specimen longitudinal counts, activity recency, watering history and photo-span context without pretending to diagnose plant health.
+- Universal Retrieval V2 indexes normalized signals, events, Conservatory records, Command Center objects, structured Personal Labs, Finance/Career/Style records and Calendar events.
+- Privacy Controls V1 exposes local footprint and confirmed destructive local-data/media controls.
+- Google Calendar integration uses Life OS identity and a backend token flow; browser code does not contain Google refresh tokens.
+- Adaptive Today already calculates a readiness model from schedule load, capacity, sleep, initiation latency, health/environment/leisure/nutrition and recovery observations.
 
-### Confirmed
-- `index.html` loads the core app and registered Life OS modules in deterministic order.
-- `state-guard.js` is loaded after the one-time reset migration and before legacy `app.js`; merge-on-write protection is active before core state writes begin.
-- Core state is stored in `dreLifeOS`.
-- `integration.js` schema 6 provides normalized signals, links, calendar semantics, I&I ingestion, Personal Labs ingestion, Command Center ingestion, day profiles, comparisons and hypothesis candidates.
-- Personal Labs and Command Center use canonical namespaces and emit `lifeos:data-changed` after writes.
-- Personal Labs 2.0 has structured longitudinal records for Skin, Hair, Body/Nutrition, Kitchen and Beauty. Structured saves write canonical records, append a Life OS event and emit a normalized LifeSignal for immediate cross-domain availability.
-- Existing plant records support care events, notes, status, photos and growth-film playback.
-- Data Health checks IDs, dates, duplicate IDs, specimen structure, unresolved plant scans, local-storage size, signal schema and reconciliation status.
-- Conservatory scans can be assigned to a named specimen. Linking copies the image into the specimen photo history, preserves scanner provenance, attaches the scanner note, marks the inbox record linked, and emits a unified event.
-- Compare Mode renders scheduled-day versus open-day descriptive comparisons from LifeSignals and surfaces hypothesis candidates with a non-causal warning.
-- Data Explorer searches the unified signal archive by text and domain.
-- Universal Retrieval V1 searches unified signals plus Conservatory specimens/notes and Command Center Chronicle, Cabinet and experiment records; it supports domain and date-range filtering.
+## Resolved since original audit
+1. Stale-write clobbering protection — BUILT + WIRED.
+2. Personal Labs + Command Center signal isolation — RESOLVED.
+3. Signal refresh after module writes — RESOLVED.
+4. Data-health visibility — BUILT.
+5. Conservatory scan filing — BUILT.
+6. Compare Mode placeholder — REPLACED V1.
+7. Data Explorer placeholder — REPLACED V1.
+8. Universal retrieval gap — BUILT V2.
+9. Personal Labs structured-data gap — RESOLVED V1.
+10. Photo-heavy localStorage path for new Personal Labs/scanner media — RESOLVED through IndexedDB LifeMedia.
+11. Finance/Career/Style missing labs — BUILT V1.
+12. Dashboard Builder shell — REPLACED V1.
+13. Private Story Studio shell — REPLACED V1.
+14. Chronicle/timeline gap — BUILT V1.
+15. Conservatory longitudinal intelligence gap — BUILT V1.
+16. Privacy/data-control absence — BUILT V1.
 
-### Resolved findings
-1. **Stale-write clobbering protection — BUILT + WIRED.** Canonical merge-on-write protection executes before legacy core boot.
-2. **Personal Labs + Command Center signal isolation — RESOLVED.** Structured records enter LifeSignals directly.
-3. **Signal refresh after module writes — RESOLVED.** `lifeos:data-changed` schedules reconciliation.
-4. **Data-health visibility — BUILT.** Command Center has functional diagnostics.
-5. **Conservatory scan filing — BUILT V1.** `scanInbox` plant images have an actionable specimen-link workflow.
-6. **Compare Mode placeholder — REPLACED V1.** Existing day-profile comparisons now have a usable interface.
-7. **Data Explorer placeholder — REPLACED V1.** Unified signals now have text/domain retrieval.
-8. **Universal retrieval gap — BUILT V1.** Archives now have cross-record local search beyond normalized signals alone.
-9. **Personal Labs structured-data gap — RESOLVED V1.** Five personal domains now support structured longitudinal records and immediate unified-signal emission.
+## Remaining material work
+1. Automated picture recognition requires a real vision backend and remains externally blocked.
+2. Existing/legacy base64 media migration should remain available if any legacy records appear, although no known user photo library currently requires bulk migration.
+3. Household/Estate deserves deeper structured inventory, maintenance and recurring-operation workflows.
+4. Finance needs richer budgeting, payoff, purchase-goal and scenario calculators beyond V1 records.
+5. Career/Academic needs application/assignment workflow states, reminders and document relationships beyond V1 records.
+6. Wardrobe/Event needs outfit composition, event packing/readiness and item relationships beyond V1 records.
+7. Reading + Ink & Intrigue requires final cross-module integration and regression audit.
+8. Cloud sync/backup needs a full current-schema audit including IndexedDB media strategy.
+9. PWA/mobile behavior needs install/offline/update regression testing.
+10. Accessibility requires keyboard, focus, labels, contrast and reduced-motion review.
+11. Performance/storage needs real-device testing and eventual migration of remaining legacy writers to `LifeStore.mutate()`.
+12. Meta authorization remains blocked externally; Life OS should continue functioning without it.
+13. Final whole-system integration and real-world release QA remain mandatory before calling the product finished.
 
-### Open integrity / architecture findings
-1. Personal Labs and scanner images remain compressed base64 in localStorage. Media must move to IndexedDB and/or cloud object storage.
-2. Automated visual recognition remains blocked until a real vision backend is connected.
-3. Dashboard Builder and Private Story Studio remain descriptive shells.
-4. Personal Labs structured records can be expanded with richer per-domain measures and dedicated comparison views after sufficient observations accumulate.
-5. Universal Retrieval V1 should later index additional rich metadata, media annotations, calendar objects and I&I-native objects directly rather than depending partly on normalized signals.
-6. The state guard remains a compatibility layer; older core writes should eventually migrate to `LifeStore.mutate()`.
-7. Browser/device regression testing is required for new compatibility and UI paths.
-
-## Work completed in latest passes
-- Built Conservatory scanner → specimen linking.
-- Added provenance-aware scanner images to specimen photo histories.
-- Built Compare Mode V1 using the normalized calendar/day-profile engine.
-- Built Data Explorer V1 with text and domain filtering across unified signals.
-- Wired and verified the canonical state guard before legacy core boot.
-- Built Universal Retrieval V1 with cross-record keyword, domain and date filtering.
-- Built and audited Personal Labs 2.0 structured longitudinal tracking across Skin, Hair, Body/Nutrition, Kitchen and Beauty.
-- Verified structured Personal Lab saves enter both canonical event history and LifeSignals.
-- Updated the permanent audit ledger after implementation.
-
-## Next implementation targets
-1. Move photo/media persistence away from localStorage.
-2. Expand Conservatory intelligence beyond filing into useful longitudinal specimen comparisons.
-3. Continue Adaptive Today 2.0 and Chronicle/timeline integration.
-4. Build the remaining domain labs: Finance, Career/Academic, Wardrobe/Event/Style.
-5. Complete Dashboard Builder and Private Story Studio.
-6. Expand universal retrieval indexing as new domain objects arrive.
-7. Continue regression auditing after each subsystem.
+## Completion estimate
+Approximately 80% of the planned master scope is now implemented at least to functional V1. This is an engineering estimate weighted by remaining work, not a claim that 80% of final QA has passed. The remaining 20% is disproportionately integration, depth, external-service completion, accessibility/performance and release verification.
 
 This ledger is intentionally conservative: existence of a file does not equal completion of the promised feature.
