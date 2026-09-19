@@ -12,7 +12,7 @@ Last updated: 2026-09-18 evening PDT
 ## Current sequence
 1. Whole-app integrity audit — IN PROGRESS
 2. Unified Life OS data architecture — BUILT / REGRESSION AUDIT IN PROGRESS
-3. Personal Labs 2.0 — PARTIAL
+3. Personal Labs 2.0 — BUILT V1 / longitudinal structured tracking VERIFIED
 4. Smart Scanner + Picture Recognizer — PARTIAL / vision backend BLOCKED
 5. Conservatory intelligence — PARTIAL; scanner → specimen linking BUILT
 6. Command Center tools — PARTIAL; Data Health, Compare Mode, Data Explorer BUILT
@@ -40,10 +40,11 @@ Last updated: 2026-09-18 evening PDT
 
 ### Confirmed
 - `index.html` loads the core app and registered Life OS modules in deterministic order.
-- `state-guard.js` is now actually loaded after the one-time reset migration and before legacy `app.js`, so its merge-on-write protection is active before core state writes begin.
+- `state-guard.js` is loaded after the one-time reset migration and before legacy `app.js`; merge-on-write protection is active before core state writes begin.
 - Core state is stored in `dreLifeOS`.
 - `integration.js` schema 6 provides normalized signals, links, calendar semantics, I&I ingestion, Personal Labs ingestion, Command Center ingestion, day profiles, comparisons and hypothesis candidates.
 - Personal Labs and Command Center use canonical namespaces and emit `lifeos:data-changed` after writes.
+- Personal Labs 2.0 has structured longitudinal records for Skin, Hair, Body/Nutrition, Kitchen and Beauty. Structured saves write canonical records, append a Life OS event and emit a normalized LifeSignal for immediate cross-domain availability.
 - Existing plant records support care events, notes, status, photos and growth-film playback.
 - Data Health checks IDs, dates, duplicate IDs, specimen structure, unresolved plant scans, local-storage size, signal schema and reconciliation status.
 - Conservatory scans can be assigned to a named specimen. Linking copies the image into the specimen photo history, preserves scanner provenance, attaches the scanner note, marks the inbox record linked, and emits a unified event.
@@ -60,12 +61,13 @@ Last updated: 2026-09-18 evening PDT
 6. **Compare Mode placeholder — REPLACED V1.** Existing day-profile comparisons now have a usable interface.
 7. **Data Explorer placeholder — REPLACED V1.** Unified signals now have text/domain retrieval.
 8. **Universal retrieval gap — BUILT V1.** Archives now have cross-record local search beyond normalized signals alone.
+9. **Personal Labs structured-data gap — RESOLVED V1.** Five personal domains now support structured longitudinal records and immediate unified-signal emission.
 
 ### Open integrity / architecture findings
 1. Personal Labs and scanner images remain compressed base64 in localStorage. Media must move to IndexedDB and/or cloud object storage.
 2. Automated visual recognition remains blocked until a real vision backend is connected.
 3. Dashboard Builder and Private Story Studio remain descriptive shells.
-4. Personal Labs needs structured domain-specific fields rather than primarily free-text observations.
+4. Personal Labs structured records can be expanded with richer per-domain measures and dedicated comparison views after sufficient observations accumulate.
 5. Universal Retrieval V1 should later index additional rich metadata, media annotations, calendar objects and I&I-native objects directly rather than depending partly on normalized signals.
 6. The state guard remains a compatibility layer; older core writes should eventually migrate to `LifeStore.mutate()`.
 7. Browser/device regression testing is required for new compatibility and UI paths.
@@ -75,18 +77,19 @@ Last updated: 2026-09-18 evening PDT
 - Added provenance-aware scanner images to specimen photo histories.
 - Built Compare Mode V1 using the normalized calendar/day-profile engine.
 - Built Data Explorer V1 with text and domain filtering across unified signals.
-- Wired the canonical state guard into production boot order before `app.js`.
+- Wired and verified the canonical state guard before legacy core boot.
 - Built Universal Retrieval V1 with cross-record keyword, domain and date filtering.
+- Built and audited Personal Labs 2.0 structured longitudinal tracking across Skin, Hair, Body/Nutrition, Kitchen and Beauty.
+- Verified structured Personal Lab saves enter both canonical event history and LifeSignals.
 - Updated the permanent audit ledger after implementation.
 
 ## Next implementation targets
-1. Expand Personal Labs 2.0 with structured fields and useful longitudinal records.
-2. Move photo/media persistence away from localStorage.
-3. Expand Conservatory intelligence beyond filing into useful longitudinal specimen comparisons.
-4. Continue Adaptive Today 2.0 and Chronicle/timeline integration.
-5. Build the remaining domain labs: Finance, Career/Academic, Wardrobe/Event/Style.
-6. Complete Dashboard Builder and Private Story Studio.
-7. Expand universal retrieval indexing as new domain objects arrive.
-8. Continue regression auditing after each subsystem.
+1. Move photo/media persistence away from localStorage.
+2. Expand Conservatory intelligence beyond filing into useful longitudinal specimen comparisons.
+3. Continue Adaptive Today 2.0 and Chronicle/timeline integration.
+4. Build the remaining domain labs: Finance, Career/Academic, Wardrobe/Event/Style.
+5. Complete Dashboard Builder and Private Story Studio.
+6. Expand universal retrieval indexing as new domain objects arrive.
+7. Continue regression auditing after each subsystem.
 
 This ledger is intentionally conservative: existence of a file does not equal completion of the promised feature.
