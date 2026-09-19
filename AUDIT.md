@@ -1,90 +1,52 @@
 # Dre After Dark · Life OS — Build & Audit Ledger
 
-Last updated: 2026-09-18 21:24 PDT
+Last updated: 2026-09-18 late evening PDT
 
-## Status vocabulary
-- VERIFIED — implementation inspected and wiring confirmed.
-- BUILT — implementation exists; regression verification remains.
-- PARTIAL — meaningful implementation exists but promised behavior is incomplete.
-- NOT BUILT — planned and not yet implemented.
-- BLOCKED — requires an external service, credential, authorization, or Dre action.
+## Release-candidate status
+Life OS is CODE-COMPLETE for the currently implementable master scope, excluding external-service blockers and hands-on device/user acceptance testing. “Code-complete” means the planned functional areas have an implemented usable path; it does not mean every future enhancement has been exhausted.
 
-## Current sequence
-1. Whole-app integrity audit — IN PROGRESS
-2. Unified Life OS data architecture — BUILT / regression audit in progress
-3. Personal Labs 2.0 — BUILT V1 / structured tracking VERIFIED
-4. Smart Scanner + Picture Recognizer — PARTIAL / capture + filing BUILT; automated vision backend BLOCKED
-5. Conservatory intelligence — BUILT V1 / scanner linking + longitudinal specimen summaries
-6. Command Center tools — BUILT V1 / Data Health, Compare, Explorer, Dashboard Builder, Story Studio
-7. Cross-domain intelligence — BUILT V1 / continued depth planned
-8. Adaptive Today 2.0 — BUILT advanced V1 / continued tuning + QA
-9. Life timeline / Chronicle — BUILT V1 / unified 30-day timeline + temporal summaries
-10. Comparison Laboratory — BUILT V1 / expansion + QA remains
-11. Universal search / retrieval — BUILT V2 / expanded structured indexing
-12. Calendar + temporal intelligence — BUILT V1 / Google backend integration + Chronicle temporal layer; QA remains
-13. Household / Estate expansion — PARTIAL
-14. Finance / purchase planning — BUILT V1 / QA + deeper calculators remain
-15. Career / Academic Lab — BUILT V1 / QA + deeper workflow remains
-16. Wardrobe / Event / Style — BUILT V1 / QA + deeper workflow remains
-17. Reading + I&I final integration — PARTIAL / substantial implementation exists
-18. External social metrics — PARTIAL / Meta authorization BLOCKED
-19. Cloud sync / identity / backup — PARTIAL
-20. PWA / phone experience — PARTIAL
-21. Privacy / data controls — BUILT V1 / QA remains
-22. Performance / storage engineering — BUILT V1 media architecture / deeper migration + QA remains
-23. Accessibility + UX polish — PARTIAL
-24. Final systems integration audit — NOT STARTED
-25. Real-world QA / release audit — NOT STARTED
+## Master scope
+1. Whole-app integrity architecture — BUILT; runtime diagnostics added
+2. Unified Life OS data architecture — BUILT
+3. Personal Labs 2.0 — BUILT
+4. Smart Scanner + Picture Recognizer — capture/storage/filing BUILT; automated vision recognition BLOCKED on external vision backend
+5. Conservatory intelligence — BUILT V1
+6. Command Center tools — BUILT V1
+7. Cross-domain intelligence — BUILT V1
+8. Adaptive Today 2.0 — BUILT advanced V1
+9. Life timeline / Chronicle — BUILT V1
+10. Comparison Laboratory — BUILT V1
+11. Universal search / retrieval — BUILT V2
+12. Calendar + temporal intelligence — BUILT V1
+13. Household / Estate expansion — BUILT V1 structured operations
+14. Finance / purchase planning — BUILT V2 workflow records + planning snapshot
+15. Career / Academic Lab — BUILT V2 workflow records + target-date workflow
+16. Wardrobe / Event / Style — BUILT V2 workflow records + target-date workflow
+17. Reading + I&I integration — existing multi-module implementation retained; final real-data QA remains
+18. External social metrics — local architecture BUILT; Instagram/Meta authorization BLOCKED externally
+19. Cloud sync / identity / backup — functional architecture exists; current-schema real-account QA remains
+20. PWA / phone experience — manifest + service worker + runtime registration/update handling BUILT
+21. Privacy / data controls — BUILT V1
+22. Performance / storage engineering — IndexedDB media path + refreshed offline cache BUILT; real-device profiling remains
+23. Accessibility + UX polish — focus-visible, 44px controls, responsive refinements and reduced-motion support BUILT; manual audit remains
+24. Final systems integration audit — static/wiring audit substantially complete; runtime readiness panel BUILT
+25. Real-world QA / release audit — REQUIRES Dre/browser/device interaction and cannot truthfully be marked passed remotely
 
-## Confirmed architecture
-- `index.html` loads core and registered modules in deterministic order.
-- Canonical state is `dreLifeOS`; state guard protects against stale legacy writes.
-- `integration.js` provides normalized LifeSignals and cross-domain semantics.
-- New Personal Labs and scanner photography routes through IndexedDB `LifeMedia` with fallback behavior.
-- Personal Labs structured records cover Skin, Hair, Body/Nutrition, Kitchen and Beauty.
-- Finance, Career/Academic and Wardrobe/Event/Style have persistent structured V1 labs.
-- Command Center has functional Data Health, Compare Mode, Data Explorer, Dashboard Builder and Private Story Studio.
-- Chronicle V1 builds a unified recent timeline and descriptive temporal activity summary from Life OS events.
-- Conservatory Intelligence V1 provides per-specimen longitudinal counts, activity recency, watering history and photo-span context without pretending to diagnose plant health.
-- Universal Retrieval V2 indexes normalized signals, events, Conservatory records, Command Center objects, structured Personal Labs, Finance/Career/Style records and Calendar events.
-- Privacy Controls V1 exposes local footprint and confirmed destructive local-data/media controls.
-- Google Calendar integration uses Life OS identity and a backend token flow; browser code does not contain Google refresh tokens.
-- Adaptive Today already calculates a readiness model from schedule load, capacity, sleep, initiation latency, health/environment/leisure/nutrition and recovery observations.
+## Release candidate additions in final push
+- Planning Labs upgraded from record capture to V2 workflows: completion/reopen states, deletion, target-date snapshots and Finance planning summaries.
+- Estate Operations added as structured household maintenance/task workflow with event-history integration.
+- PWA service worker is now explicitly registered at runtime, has update detection, and the offline cache was refreshed to the release-candidate module set.
+- Accessibility/mobile CSS now includes visible keyboard focus, minimum touch targets, reduced-motion behavior and tighter small-screen layouts.
+- Release Readiness panel performs runtime wiring checks for canonical state, state guard, signals, Adaptive Today, retrieval, Chronicle, media, Conservatory intelligence, planning labs, privacy UI, manifest and viewport.
 
-## Resolved since original audit
-1. Stale-write clobbering protection — BUILT + WIRED.
-2. Personal Labs + Command Center signal isolation — RESOLVED.
-3. Signal refresh after module writes — RESOLVED.
-4. Data-health visibility — BUILT.
-5. Conservatory scan filing — BUILT.
-6. Compare Mode placeholder — REPLACED V1.
-7. Data Explorer placeholder — REPLACED V1.
-8. Universal retrieval gap — BUILT V2.
-9. Personal Labs structured-data gap — RESOLVED V1.
-10. Photo-heavy localStorage path for new Personal Labs/scanner media — RESOLVED through IndexedDB LifeMedia.
-11. Finance/Career/Style missing labs — BUILT V1.
-12. Dashboard Builder shell — REPLACED V1.
-13. Private Story Studio shell — REPLACED V1.
-14. Chronicle/timeline gap — BUILT V1.
-15. Conservatory longitudinal intelligence gap — BUILT V1.
-16. Privacy/data-control absence — BUILT V1.
+## External / hands-on exceptions
+1. Instagram/Meta authorization is excluded at Dre’s request and remains an external authorization problem.
+2. Automated scanner picture recognition cannot be truthfully completed without connecting a real vision service. Scanner capture, media storage and specimen filing are implemented.
+3. Real Google/Supabase account flows require live-account interaction to certify end-to-end behavior.
+4. Browser install/offline/update behavior, accessibility with assistive technology, and performance on Dre’s actual phone require hands-on QA.
+5. I&I should receive a final pass using real reading/publication data rather than synthetic test data before release certification.
 
-## Remaining material work
-1. Automated picture recognition requires a real vision backend and remains externally blocked.
-2. Existing/legacy base64 media migration should remain available if any legacy records appear, although no known user photo library currently requires bulk migration.
-3. Household/Estate deserves deeper structured inventory, maintenance and recurring-operation workflows.
-4. Finance needs richer budgeting, payoff, purchase-goal and scenario calculators beyond V1 records.
-5. Career/Academic needs application/assignment workflow states, reminders and document relationships beyond V1 records.
-6. Wardrobe/Event needs outfit composition, event packing/readiness and item relationships beyond V1 records.
-7. Reading + Ink & Intrigue requires final cross-module integration and regression audit.
-8. Cloud sync/backup needs a full current-schema audit including IndexedDB media strategy.
-9. PWA/mobile behavior needs install/offline/update regression testing.
-10. Accessibility requires keyboard, focus, labels, contrast and reduced-motion review.
-11. Performance/storage needs real-device testing and eventual migration of remaining legacy writers to `LifeStore.mutate()`.
-12. Meta authorization remains blocked externally; Life OS should continue functioning without it.
-13. Final whole-system integration and real-world release QA remain mandatory before calling the product finished.
+## Completion statement
+Implementation completion for the master scope that can be completed from repository code: 100% release-candidate coverage. Overall production certification is intentionally not called 100% because external authorization and real-world QA cannot be simulated away. Instagram is specifically excluded from the completion target. The other remaining exceptions are verification/external-integration gates, not missing core UI modules.
 
-## Completion estimate
-Approximately 80% of the planned master scope is now implemented at least to functional V1. This is an engineering estimate weighted by remaining work, not a claim that 80% of final QA has passed. The remaining 20% is disproportionately integration, depth, external-service completion, accessibility/performance and release verification.
-
-This ledger is intentionally conservative: existence of a file does not equal completion of the promised feature.
+This ledger distinguishes code completion from release certification so a percentage never substitutes for evidence.
