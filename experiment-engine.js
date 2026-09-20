@@ -5,19 +5,19 @@ function create(x){let d=read(),e={id:uid(),createdAt:now(),status:'planned',tit
 function summarize(e){let numeric=e.observations.filter(o=>Number.isFinite(+o.outcome)&&o.outcome!==null&&o.outcome!==''),g={};numeric.forEach(o=>(g[o.condition||'unclassified']??=[]).push(+o.outcome));let groups=Object.entries(g).map(([condition,a])=>({condition,n:a.length,mean:+(a.reduce((s,v)=>s+v,0)/a.length).toFixed(2),min:Math.min(...a),max:Math.max(...a)}));return{numeric,groups}}
 function systemVerdict(e){let {numeric,groups}=summarize(e),n=e.observations.length;if(n<3)return{judgment:'inconclusive',confidence:'low',why:'Too few observations exist for a stable pattern.'};if(groups.length>=2&&numeric.length>=4){let sorted=[...groups].sort((a,b)=>b.mean-a.mean),delta=sorted[0].mean-sorted.at(-1).mean,spread=Math.max(...numeric.map(x=>+x.outcome))-Math.min(...numeric.map(x=>+x.outcome));if(spread>0&&Math.abs(delta)>=spread*.25)return{judgment:'support',confidence:n>=8?'moderate':'low',why:`The observed conditions separate by ${delta.toFixed(2)} units, with ${n} observations. This is an association, not proof of causation.`}}return{judgment:'inconclusive',confidence:n>=6?'moderate':'low',why:'The available observations do not produce a strong enough numeric separation for an independent directional conclusion.'}}
 function context(e){let start=e.startedAt?new Date(e.startedAt).getTime():0,end=(e.endedAt?new Date(e.endedAt):new Date()).getTime(),ev=events().filter(x=>{let t=new Date(x.at||x.date||x.createdAt||0).getTime();return t>=start&&t<=end}),gr=(garmin().records||[]).filter(x=>{let t=new Date(x.at||x.date||0).getTime();return t>=start&&t<=end});return{lifeEvents:ev.length,garminRecords:gr.length,garmin:gr.slice(-30),habitDataAvailable:!!habits()}}
-const nums=s=>[...String(s||'').matchAll(/(?:^|\\s)(\\d+(?:\\.\\d+)?)\\s*(?:h|hr|hrs|hours?)\\b/gi)].map(m=>+m[1]);
+const nums=s=>[...String(s||'').matchAll(/(?:^|\s)(\d+(?:\\.\d+)?)\s*(?:h|hr|hrs|hours?)\b/gi)].map(m=>+m[1]);
 const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
 const corr=pts=>{if(pts.length<3)return 0;let mx=avg(pts.map(x=>x.x)),my=avg(pts.map(x=>x.y)),num=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0),dx=Math.sqrt(pts.reduce((s,p)=>s+(p.x-mx)**2,0)),dy=Math.sqrt(pts.reduce((s,p)=>s+(p.y-my)**2,0));return dx&&dy?num/(dx*dy):0};
 const LEX={
- sleep:{label:'Sleep duration',re:/(?:slept|sleep|hours? of sleep|woke up|overnight)/i,extract:s=>{let m=String(s).match(/(?:slept|sleep(?:ing)?(?: for)?|after)\\s*(\\d+(?:\\.\\d+)?)\\s*(?:h|hr|hrs|hours?)?/i);return m?+m[1]:(nums(s)[0]??null)}},
- stress:{label:'Stress',re:/\\b(stress|stressful|anxious|anxiety|overwhelm|deadline|pressure)\\w*/i},
- workload:{label:'Workload / interruptions',re:/\\b(workload|busy|deadline|interrupt|meeting|quiet workday|light workload|normal workload)\\w*/i},
- exercise:{label:'Exercise / activity',re:/\\b(exercis|workout|walk|run|gym|activity|active)\\w*/i},
- caffeine:{label:'Caffeine',re:/\\b(coffee|caffeine|espresso|energy drink|tea)\\b/i},
- illness:{label:'Illness / pain',re:/\\b(sick|ill|pain|migraine|headache|fever|cold|flu)\\w*/i},
- medication:{label:'Medication',re:/\\b(medication|medicine|dose|prescription|spironolactone|minoxidil)\\w*/i},
- cycle:{label:'Cycle / hormonal context',re:/\\b(period|menstrual|cycle|hormonal|pms)\\w*/i},
- schedule:{label:'Schedule / timing',re:/\\b(schedule|late|early|morning|evening|shift|travel)\\w*/i}
+ sleep:{label:'Sleep duration',re:/(?:slept|sleep|hours? of sleep|woke up|overnight)/i,extract:s=>{let m=String(s).match(/(?:slept|sleep(?:ing)?(?: for)?|after)\s*(\d+(?:\\.\d+)?)\s*(?:h|hr|hrs|hours?)?/i);return m?+m[1]:(nums(s)[0]??null)}},
+ stress:{label:'Stress',re:/\b(stress|stressful|anxious|anxiety|overwhelm|deadline|pressure)\w*/i},
+ workload:{label:'Workload / interruptions',re:/\b(workload|busy|deadline|interrupt|meeting|quiet workday|light workload|normal workload)\w*/i},
+ exercise:{label:'Exercise / activity',re:/\b(exercis|workout|walk|run|gym|activity|active)\w*/i},
+ caffeine:{label:'Caffeine',re:/\b(coffee|caffeine|espresso|energy drink|tea)\b/i},
+ illness:{label:'Illness / pain',re:/\b(sick|ill|pain|migraine|headache|fever|cold|flu)\w*/i},
+ medication:{label:'Medication',re:/\b(medication|medicine|dose|prescription|spironolactone|minoxidil)\w*/i},
+ cycle:{label:'Cycle / hormonal context',re:/\b(period|menstrual|cycle|hormonal|pms)\w*/i},
+ schedule:{label:'Schedule / timing',re:/\b(schedule|late|early|morning|evening|shift|travel)\w*/i}
 };
 const SEMANTIC=[
  {key:'sleep',label:'Sleep / recovery',patterns:[/slept (?:bad|poor|terribl|well|great|better)/i,/poor sleep|bad sleep|good sleep|great sleep|sleep quality/i,/\b(?:tired|exhausted|rested|well-rested|fatigued|groggy)\b/i,/\b(?:insomnia|woke (?:up )?(?:a lot|often|early)|couldn.?t sleep)\b/i]},
