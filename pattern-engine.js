@@ -12,5 +12,5 @@ function hypothesesFrom(b,e){let out=[],names={habitSignals:'habit activity',rea
 function hypotheses(){let p=profiles(),b=compareProfiles(p,'bodySignals'),e=compareProfiles(p,'environmentSignals');return hypothesesFrom(b,e)}
 function model(){let ss=signals(),p=profilesFrom(ss),b=compareProfiles(p,'bodySignals'),e=compareProfiles(p,'environmentSignals'),cal=window.LifeSignals?.calendarComparisons?.()||null;return{generatedAt:new Date().toISOString(),signals:ss.length,classes:{schedule:cal,body:b,environment:e,cognition:{reading:ss.filter(x=>x.domain==='reading').length,publishing:ss.filter(x=>x.domain==='publishing').length}},hypotheses:hypothesesFrom(b,e),safety:'Observational associations are not diagnoses or causal findings.'}}
 window.PatternEngine={profiles,bodyComparisons,environmentComparisons,careWindows,environmentWindows,hypotheses,model};
-try{window.dispatchEvent(new CustomEvent('lifeos:patterns',{detail:model()}))}catch(e){console.warn('[PatternEngine] startup model failed',e)}
+
 })();
