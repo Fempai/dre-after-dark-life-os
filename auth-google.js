@@ -22,7 +22,7 @@ async function boot(){
  upgrade();
  client.auth.onAuthStateChange((event,session)=>{setTimeout(async()=>{await paint(session);if(event==='SIGNED_IN'&&session)await restoreCloudIfNeeded(session)},0)});
  const result=await client.auth.getSession(),session=result.data.session,error=result.error;
- showDiagnostics(callbackReport,session,error?.message||null);
+ if(callbackReport.returnedFromOAuth||error)showDiagnostics(callbackReport,session,error?.message||null);
  if(error)paintError(error.message);else{await paint(session);if(session)await restoreCloudIfNeeded(session)}
  readyResolve(client);
 }
