@@ -1,5 +1,4 @@
 /* Dre After Dark · Life OS — PWA runtime */
 (()=>{'use strict';
-// Load the interactive Habit Curriculum after the core app is initialized.
-if(!document.querySelector('script[data-lifeos-habits]')){let s=document.createElement('script');s.src='./habit-curriculum.js?v=20260918-01';s.dataset.lifeosHabits='1';document.head.appendChild(s)}
+// Habit Curriculum is loaded once by index.html; PWA runtime must not inject a stale duplicate.
 if(!('serviceWorker'in navigator))return;window.addEventListener('load',async()=>{try{let r=await navigator.serviceWorker.register('./sw.js?v=20260923-pwaqa01',{updateViaCache:'none'});let installed=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;window.LifePWA={registration:r,update:()=>r.update(),installed};let b=document.getElementById('installBtn');if(installed&&b)b.classList.add('hidden');r.addEventListener('updatefound',()=>{let w=r.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)window.dispatchEvent(new CustomEvent('lifeos:pwa-update'))})})}catch(e){console.warn('[LifeOS PWA]',e)}});window.addEventListener('lifeos:pwa-update',()=>{let t=document.querySelector('#toast');if(t){t.textContent='Life OS update ready. Reload when convenient.';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5000)}})})();
