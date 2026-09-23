@@ -15,6 +15,6 @@ function toggle(id){
  try{window.dispatchEvent(new CustomEvent('lifeos:habit-change',{detail:{id}}))}catch{}
 }
 function handle(e){let b=e.target.closest?.('[data-habit-toggle],[data-habit],[data-complete],.habit-check');let id=idFrom(b);if(!id)return;e.preventDefault();e.stopImmediatePropagation();toggle(id)}
-document.addEventListener('pointerup',handle,true);
+document.addEventListener('click',handle,true);
 window.LifeHabitInteractions={toggle};
 })();
