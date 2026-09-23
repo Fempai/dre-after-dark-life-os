@@ -1,0 +1,12 @@
+/* Life OS — direct recovery controls for Habits + Conservatory */
+(()=>{'use strict';const K='dreLifeOS',$=s=>document.querySelector(s),uid=()=>crypto.randomUUID?.()||String(Date.now());
+function read(){try{return JSON.parse(localStorage.getItem(K)||'{}')}catch{return{}}}function save(d){localStorage.setItem(K,JSON.stringify(d))}
+function toast(t){let x=$('#toast');if(!x)return;x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1800)}
+function modal(h){let m=$('#modal'),c=$('#modalContent');if(c)c.innerHTML=h;m?.classList.remove('hidden')}
+function resetHabits(){let d=read(),today=new Date().toDateString(),before=(d.events||[]).length;d.events=(d.events||[]).filter(e=>!(e.domain==='habit'&&new Date(e.at).toDateString()===today));save(d);window.LifeHabitCurriculum?.refresh?.();window.HabitCommand?.render?.();toast(before===d.events.length?'No habit completions to reset today.':'Today’s habit completions reset. 🗝️')}
+function beginRound(){let d=read();d.events=d.events||[];d.events.push({id:uid(),at:new Date().toISOString(),domain:'plant',type:'conservatory-round',detail:'Conservatory observation round started'});save(d);toast('Conservatory round started 🌿');window.ConservatoryCommand?.render?.()}
+function openSpecimen(){modal('<p class="eyebrow">NEW SPECIMEN</p><h2>Admit a plant to the Conservatory</h2><input id="newPlantName" placeholder="Specimen nickname"><button id="saveSpecimenDirect" type="button" class="primary">Add specimen</button>')}
+function saveSpecimen(){let n=$('#newPlantName')?.value.trim();if(!n){toast('Give the specimen a name first.');return}let d=read();d.plants=d.plants||[];d.plants.push({id:uid(),nickname:n,status:'stable',events:[],photos:[],notes:[]});save(d);$('#modal')?.classList.add('hidden');window.ConservatoryCommand?.render?.();toast(n+' admitted to the Conservatory 🌿')}
+document.addEventListener('click',e=>{let t=e.target.closest?.('#resetHabits,#plantRound,#addPlant,#saveSpecimenDirect');if(!t)return;e.preventDefault();e.stopImmediatePropagation();if(t.id==='resetHabits')resetHabits();if(t.id==='plantRound')beginRound();if(t.id==='addPlant')openSpecimen();if(t.id==='saveSpecimenDirect')saveSpecimen()},true);
+window.LifeRecoveryControls={resetHabits,beginRound,openSpecimen};
+})();
