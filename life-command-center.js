@@ -16,7 +16,7 @@ function render(){let h=$('#commandCenter');if(!h)return;let d=load(),cc=d.comma
 '<div class="ii-item"><b>Cabinet</b><p><small>Objects, references and things worth remembering.</small></p><button data-capture="Cabinet">+ Add</button><small> '+(cc.cabinet?.length||0)+' saved</small></div>',
 '<div class="ii-item"><b>Experiments</b><p><small>Questions, changes and outcomes.</small></p><button data-capture="Experiments">+ Add</button><small> '+(cc.experiments?.length||0)+' saved</small></div>',
 safe(compareHTML,'<div class="ii-item"><b>Compare Mode</b><p><small>Comparison engine unavailable right now.</small></p></div>'),
-safe(()=>explorerHTML(d),'<div class="ii-item"><b>Data Explorer</b><p><small>Explorer unavailable right now.</small></p></div>'),
+
 safe(()=>dashboardHTML(d),'<div class="ii-item"><b>Dashboard Builder</b><p><small>Dashboard unavailable right now.</small></p></div>'),
 safe(()=>healthHTML(d),'<div class="ii-item"><b>Data Health</b><p><small>Diagnostics unavailable right now.</small></p></div>'),
 safe(()=>storyHTML(d),'<div class="ii-item"><b>Private Story Studio</b><p><small>Story tools unavailable right now.</small></p></div>')
