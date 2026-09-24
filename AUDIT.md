@@ -1,6 +1,6 @@
 # Dre After Dark · Life OS — Build & Audit Ledger
 
-Last updated: 2026-09-18 late evening PDT
+Last updated: 2026-09-23 PDT
 
 ## Release-candidate status
 Life OS is CODE-COMPLETE for the currently implementable master scope, excluding external-service blockers and hands-on device/user acceptance testing. “Code-complete” means the planned functional areas have an implemented usable path; it does not mean every future enhancement has been exhausted.
@@ -50,3 +50,10 @@ Life OS is CODE-COMPLETE for the currently implementable master scope, excluding
 Implementation completion for the master scope that can be completed from repository code: 100% release-candidate coverage. Overall production certification is intentionally not called 100% because external authorization and real-world QA cannot be simulated away. Instagram is specifically excluded from the completion target. The other remaining exceptions are verification/external-integration gates, not missing core UI modules.
 
 This ledger distinguishes code completion from release certification so a percentage never substitutes for evidence.
+
+## Production QA closeout — 2026-09-23
+Completed hands-on gates: System Health 16/16; backup/export/import; offline PWA; Android install; installed standalone runtime; mobile accessibility/touch targets; real-device performance/storage; I&I real-data; Supabase cloud sync/read-back; Google Calendar real-account sync/read; Smart Scanner IndexedDB persistence; privacy safety; WordPress real-account sync; final production smoke test.
+
+WordPress certification verified 22/22 posts persisted with server-side metric snapshots. Instagram/Meta is intentionally excluded. Automated scanner visual identification still requires a vision backend and is not represented as complete. Google Calendar write/create exists in the backend but was not part of the certified real-account sync/read gate.
+
+Backend review: server-only integration/cache tables remain protected behind RLS. Supabase reports leaked-password protection disabled; Google OAuth is the certified Life OS sign-in path. Performance review reported missing foreign-key covering indexes; indexes were added as a non-breaking optimization.
