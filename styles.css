@@ -98,3 +98,6 @@
 
 /* I&I Lab 2.2 — no foreign blue controls */
 #iiLab button,#iiLab .btn,#iiLab input[type="button"],#iiLab input[type="submit"]{background:linear-gradient(180deg,#351d2b,#2a1822)!important;color:#f5e9df!important;border:1px solid #6f3b54!important;box-shadow:none!important}#iiLab button:hover,#iiLab .btn:hover{background:#442236!important;border-color:#9a536f!important}#iiLab a.button,#iiLab [role="button"]{accent-color:#a75b78}
+
+/* Release accessibility pass */
+summary{min-height:44px}summary:focus-visible,a:focus-visible,label.file:focus-within{outline:3px solid var(--gold);outline-offset:3px}nav button{min-width:44px}.x{min-width:44px;min-height:44px}button:disabled{cursor:not-allowed;opacity:.55}input::placeholder,textarea::placeholder{opacity:.78}@media(max-width:480px){button,input,select{min-height:46px}}
