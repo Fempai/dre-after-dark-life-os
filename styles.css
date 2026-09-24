@@ -101,3 +101,6 @@
 
 /* Release accessibility pass */
 summary{min-height:44px}summary:focus-visible,a:focus-visible,label.file:focus-within{outline:3px solid var(--gold);outline-offset:3px}nav button{min-width:44px}.x{min-width:44px;min-height:44px}button:disabled{cursor:not-allowed;opacity:.55}input::placeholder,textarea::placeholder{opacity:.78}@media(max-width:480px){button,input,select{min-height:46px}}
+
+/* Mobile nav release fix: preserve horizontal rail; never squeeze labels */
+#nav{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;-webkit-overflow-scrolling:touch;gap:4px}#nav button{flex:0 0 auto;white-space:nowrap;min-width:max-content} @media(max-width:760px){#nav{justify-content:flex-start}#nav button{flex:0 0 auto;min-width:max-content;padding-inline:14px}}
