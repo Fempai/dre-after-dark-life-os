@@ -41,7 +41,14 @@ async function syncNow(){
  const snapshot=localState()||{};
  const {error}=await client.from('life_os_profiles').upsert({user_id:session.user.id,settings:{life_os:snapshot},updated_at:new Date().toISOString()},{onConflict:'user_id'});
  if(error)return paintError(error.message);
- localStorage.setItem('dreLifeOSCloudUser',session.user.id);if(x)x.textContent=`Cloud synced · ${session.user.email||'Google account'} · ${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`;
+ const verify=await client.from('life_os_profiles').select('settings,updated_at').eq('user_id',session.user.id).maybeSingle();
+ if(verify.error)return paintError('Upload completed, but verification failed: '+verify.error.message);
+ const remote=verify.data?.settings?.life_os;
+ if(!remote||typeof remote!=='object')return paintError('Upload completed, but the cloud copy could not be verified.');
+ const localBytes=new Blob([JSON.stringify(snapshot)]).size,remoteBytes=new Blob([JSON.stringify(remote)]).size;
+ const localEvents=Array.isArray(snapshot.events)?snapshot.events.length:0,remoteEvents=Array.isArray(remote.events)?remote.events.length:0;
+ if(localBytes!==remoteBytes||localEvents!==remoteEvents)return paintError(`Cloud verification mismatch (local ${localBytes} B/${localEvents} events; cloud ${remoteBytes} B/${remoteEvents} events).`);
+ localStorage.setItem('dreLifeOSCloudUser',session.user.id);if(x)x.textContent=`Cloud verified · ${session.user.email||'Google account'} · ${remoteBytes} B · ${remoteEvents} events · ${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`;
 }
 async function restoreCloudIfNeeded(session){
  if(localState())return;
