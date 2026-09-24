@@ -5,7 +5,7 @@ let deferredInstall=null;
 function installed(){return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
 function certify(){let box=document.getElementById('pwaCertification');if(!box)return;let standalone=installed(),controlled=!!navigator.serviceWorker.controller,secure=location.protocol==='https:',ok=standalone&&controlled&&secure;box.innerHTML=`<article class="card ${ok?'accent':''}"><p class="eyebrow">📱 INSTALLED APP CERTIFICATION</p><h3>${ok?'Standalone runtime verified ✓':'Installed runtime check'}</h3><p class="quiet">Launch mode: <b>${standalone?'Standalone ✓':'Browser'}</b> · Service worker: <b>${controlled?'Controlled ✓':'Waiting'}</b> · Secure origin: <b>${secure?'HTTPS ✓':'No'}</b></p><p class="quiet">${ok?'Life OS is running as the installed app, outside the normal browser tab.':'Open Life OS from its installed home-screen/app icon to complete this release gate.'}</p></article>`}function paint(){
  const b=document.getElementById('installBtn');if(!b)return;
- if(installed()){b.classList.remove('hidden');b.disabled=true;b.textContent='Installed ✓';b.setAttribute('aria-label','Life OS is installed');return}
+ if(installed()){b.classList.add('hidden');b.disabled=true;b.textContent='Install app';b.setAttribute('aria-label','Life OS is installed');certify();return}
  if(deferredInstall){b.classList.remove('hidden');b.disabled=false;b.textContent='Install app';b.setAttribute('aria-label','Install Life OS app');return}
  b.classList.add('hidden');
  certify();
