@@ -143,3 +143,16 @@ button.k-view-all{width:100%;margin-top:10px}
 .k-filter-row::-webkit-scrollbar{display:none}
 button.k-filter{min-height:34px;white-space:nowrap;padding:6px 10px;font-size:.76rem}
 button.k-filter.active{border-color:var(--gold);color:var(--gold);background:rgba(201,160,92,.1)}
+
+/* Kitchen scalable collection accordions */
+.k-collection{padding:0!important;overflow:hidden}
+.k-collection-summary{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px;cursor:pointer;list-style:none}
+.k-collection-summary::-webkit-details-marker{display:none}
+.k-collection-summary>span:first-child{display:grid;gap:4px}
+.k-collection-summary strong{font-family:Georgia,serif;font-size:1.25rem}
+.k-collection-summary small{color:var(--muted)}
+.k-chevron{font-size:1.35rem;color:var(--gold);transition:transform .18s ease}
+.k-collection[open]>.k-collection-summary .k-chevron{transform:rotate(180deg)}
+.k-collection-body{padding:0 18px 18px;border-top:1px solid rgba(201,160,92,.14)}
+.k-history{margin-top:14px;border-top:1px solid rgba(201,160,92,.18);padding-top:12px}
+.k-history>summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:700}
