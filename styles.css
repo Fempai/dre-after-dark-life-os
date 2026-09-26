@@ -131,3 +131,15 @@ button.k-text-btn{min-height:36px;padding:6px 10px;font-size:.78rem}
 button.k-view-all{width:100%;margin-top:10px}
 .k-history{margin-top:16px;padding-top:14px;border-top:1px solid rgba(201,160,92,.18);display:grid;gap:8px}
 @media(max-width:600px){.k-global-search{align-items:stretch}.k-global-search button{min-width:70px}}
+
+/* Kitchen collection-manager layout */
+.k-add-panel{margin:12px 0;border:1px solid rgba(201,160,92,.2);border-radius:14px;overflow:hidden}
+.k-add-panel summary{padding:12px 14px;cursor:pointer;color:var(--gold);font-weight:700;list-style:none}
+.k-add-panel summary::-webkit-details-marker{display:none}
+.k-add-panel[open] summary{border-bottom:1px solid rgba(201,160,92,.16)}
+.k-add-panel .kitchen-fields{padding:12px}
+.k-add-panel>button{margin:0 12px 12px;width:calc(100% - 24px)}
+.k-filter-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.k-filter-row::-webkit-scrollbar{display:none}
+button.k-filter{min-height:34px;white-space:nowrap;padding:6px 10px;font-size:.76rem}
+button.k-filter.active{border-color:var(--gold);color:var(--gold);background:rgba(201,160,92,.1)}
