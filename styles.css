@@ -121,3 +121,13 @@ button.k-icon{min-width:38px;width:38px;height:38px;min-height:38px;padding:0;bo
 .k-recipe summary{cursor:pointer;color:var(--gold)}
 .kitchen-fields{display:grid;gap:8px}
 @media(max-width:600px){.k-record{padding:12px}.k-record-head h4{font-size:1.05rem}}
+
+/* Kitchen long-list controls */
+.k-global-search{display:flex;gap:8px;margin-top:14px}
+.k-global-search input{flex:1;min-width:0}
+.k-global-search button{flex:0 0 auto}
+.k-section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 6px;color:var(--muted);font-size:.82rem}
+button.k-text-btn{min-height:36px;padding:6px 10px;font-size:.78rem}
+button.k-view-all{width:100%;margin-top:10px}
+.k-history{margin-top:16px;padding-top:14px;border-top:1px solid rgba(201,160,92,.18);display:grid;gap:8px}
+@media(max-width:600px){.k-global-search{align-items:stretch}.k-global-search button{min-width:70px}}
