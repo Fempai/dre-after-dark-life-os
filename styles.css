@@ -178,3 +178,7 @@ button.k-back{margin:10px 0 4px;min-height:38px}
 .k-favorite input{width:auto}
 .k-urgency-grid{display:grid;gap:14px}
 .k-urgency{border-top:1px solid rgba(201,160,92,.14)}
+
+/* Keep daily quote visible on every Life OS view */
+#quote{display:block;margin-top:12px;max-width:760px;color:var(--muted);font-style:italic;line-height:1.5}
+#quote span{color:var(--gold)}
