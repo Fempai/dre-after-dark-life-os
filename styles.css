@@ -163,3 +163,12 @@ button.k-category-tile{display:grid;text-align:left;gap:3px;min-height:64px;padd
 .k-category-tile strong{font-family:Georgia,serif;font-size:.92rem}
 .k-category-tile small{color:var(--muted);font-size:.72rem}
 @media(min-width:760px){.k-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Recipe library navigation */
+.k-library-head{display:flex;justify-content:space-between;align-items:end;margin:16px 0 10px}
+.k-library-head strong{font-family:Georgia,serif;font-size:1.05rem}
+.k-library-head small{color:var(--muted)}
+button.k-category-tile{position:relative;padding-right:30px}
+.k-category-tile>span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:1.2rem}
+.k-category-results>.eyebrow{margin:14px 0 8px}
+button.k-back{margin:10px 0 4px;min-height:38px}
