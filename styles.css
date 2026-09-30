@@ -156,3 +156,10 @@ button.k-filter.active{border-color:var(--gold);color:var(--gold);background:rgb
 .k-collection-body{padding:0 18px 18px;border-top:1px solid rgba(201,160,92,.14)}
 .k-history{margin-top:14px;border-top:1px solid rgba(201,160,92,.18);padding-top:12px}
 .k-history>summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:700}
+
+/* Kitchen category library */
+.k-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+button.k-category-tile{display:grid;text-align:left;gap:3px;min-height:64px;padding:10px 12px}
+.k-category-tile strong{font-family:Georgia,serif;font-size:.92rem}
+.k-category-tile small{color:var(--muted);font-size:.72rem}
+@media(min-width:760px){.k-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
