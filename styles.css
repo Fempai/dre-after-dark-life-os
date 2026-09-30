@@ -187,3 +187,17 @@ button.k-back{margin:10px 0 4px;min-height:38px}
 .daily-quote{display:block!important;margin-top:18px;padding:12px 14px;border-left:2px solid var(--gold);background:rgba(201,160,92,.055);border-radius:0 12px 12px 0;max-width:760px}
 .daily-quote-label{display:block;color:var(--gold);font-size:9px;letter-spacing:.18em;font-weight:800;margin-bottom:6px}
 .daily-quote .quote{display:block!important;margin:0!important;min-height:22px;color:#d7c7bd!important;font-family:Georgia,serif;font-style:italic}
+
+/* Kitchen import, scaling + intelligence */
+.k-import-row,.k-recipe-actions{display:flex;gap:8px;flex-wrap:wrap}
+.k-upload-label{display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;cursor:pointer}
+.k-ingredient-list{display:grid;gap:7px}
+.k-ingredient-row{display:grid;grid-template-columns:.65fr .8fr 1.5fr 1.2fr;gap:6px}
+.k-scale{margin:10px 0;padding:10px;border:1px solid rgba(201,160,92,.16);border-radius:12px}
+.k-scale input{width:82px;margin-left:8px}
+.k-structured p,[data-scaled] p{margin:5px 0}
+.k-intelligence{margin-top:14px;border-top:1px solid rgba(201,160,92,.18);padding-top:12px}
+.k-intelligence>summary{cursor:pointer;color:var(--gold);font-weight:700}
+.k-intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.k-intel-grid label{display:grid;gap:5px;color:var(--muted);font-size:.78rem}
+@media(max-width:600px){.k-ingredient-row{grid-template-columns:1fr 1fr}.k-intel-grid{grid-template-columns:1fr}}
