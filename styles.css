@@ -206,3 +206,11 @@ button.k-back{margin:10px 0 4px;min-height:38px}
 .k-custom-cuisine{grid-column:1/-1}
 .k-pantry-priority{grid-column:1/-1;display:flex!important;grid-template-columns:auto 1fr!important;align-items:center;gap:9px!important;padding:10px 12px;border:1px solid rgba(201,160,92,.15);border-radius:12px}
 .k-pantry-priority input{width:auto}
+
+/* Meal Intelligence session/default architecture */
+.k-intel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.k-intel-results{display:grid;gap:8px;margin-top:14px}
+.k-intel-match,.k-intel-empty{padding:12px;border:1px solid rgba(201,160,92,.16);border-radius:12px;background:rgba(201,160,92,.035)}
+.k-intel-match{display:grid;gap:5px}
+.k-intel-match small{color:var(--gold)}
+.k-intel-match p,.k-intel-empty p{margin:3px 0;color:var(--muted);font-size:.84rem}
