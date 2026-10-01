@@ -201,3 +201,8 @@ button.k-back{margin:10px 0 4px;min-height:38px}
 .k-intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
 .k-intel-grid label{display:grid;gap:5px;color:var(--muted);font-size:.78rem}
 @media(max-width:600px){.k-ingredient-row{grid-template-columns:1fr 1fr}.k-intel-grid{grid-template-columns:1fr}}
+
+/* Meal intelligence V2 */
+.k-custom-cuisine{grid-column:1/-1}
+.k-pantry-priority{grid-column:1/-1;display:flex!important;grid-template-columns:auto 1fr!important;align-items:center;gap:9px!important;padding:10px 12px;border:1px solid rgba(201,160,92,.15);border-radius:12px}
+.k-pantry-priority input{width:auto}
