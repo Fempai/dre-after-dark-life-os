@@ -57,3 +57,10 @@ Completed hands-on gates: System Health 16/16; backup/export/import; offline PWA
 WordPress certification verified 22/22 posts persisted with server-side metric snapshots. Instagram/Meta is intentionally excluded. Automated scanner visual identification still requires a vision backend and is not represented as complete. Google Calendar real-account write/create was subsequently tested and PASSED: the Life OS test event was created in the connected Google Calendar.
 
 Backend review: server-only integration/cache tables remain protected behind RLS. Supabase reports leaked-password protection disabled; Google OAuth is the certified Life OS sign-in path. Performance review reported missing foreign-key covering indexes; indexes were added as a non-breaking optimization.
+
+
+### 2026-10-01 runtime hardening
+- Added non-blocking cuisine spelling suggestions to Meal Intelligence.
+- Repaired a legacy `app.js` syntax corruption and removed a duplicated corrupted tail; core script now parses successfully.
+- Repaired syntax defects in release-readiness, privacy-controls, Chronicle, and Conservatory intelligence modules.
+- Re-verified parsing for Calendar, Google auth, PWA runtime, media store, backup, external metrics, adaptive UI/Today, archive QA, Conservatory command/care/organizer, Today command, Habits command, House command, and Kitchen command.
