@@ -61,7 +61,22 @@ def collect(day=None):
       "updated_at":datetime.now(timezone.utc).isoformat()
     }
     sb.table("health_daily").upsert(body,on_conflict="user_id,day,source").execute()
-    return {"day":day,"written":True,"fields":sum(v is not None for k,v in body.items() if k not in ("payload","updated_at","user_id","day","source"))}
+    activities=safe(api.get_activities_by_date,day,day) if hasattr(api,"get_activities_by_date") else []
+    activity_count=0
+    if isinstance(activities,list):
+        for a in activities:
+            aid=pick(a,"activityId","activityUUID","id")
+            if aid is None: continue
+            atype=pick(a.get("activityType",{}) if isinstance(a,dict) else {},"typeKey","typeId")
+            row={"user_id":USER,"source":"garmin_connect","source_id":str(aid),
+                 "started_at":pick(a,"startTimeGMT","startTimeLocal","startTime"),
+                 "ended_at":None,"sport":str(atype) if atype is not None else None,
+                 "duration_seconds":num(pick(a,"duration","elapsedDuration")),
+                 "distance_m":num(pick(a,"distance")),"calories":num(pick(a,"calories")),
+                 "avg_hr":num(pick(a,"averageHR","avgHeartRate")),"max_hr":num(pick(a,"maxHR","maxHeartRate")),
+                 "fit_summary":{"activityName":pick(a,"activityName"),"raw":a}}
+            sb.table("health_activities").upsert(row,on_conflict="user_id,source,source_id").execute();activity_count+=1
+    return {"day":day,"written":True,"fields":sum(v is not None for k,v in body.items() if k not in ("payload","updated_at","user_id","day","source")),"activities":activity_count}
 def backfill(days):
     out=[]
     for i in range(max(1,min(days,90))):
