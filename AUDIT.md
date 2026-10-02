@@ -80,3 +80,14 @@ Backend review: server-only integration/cache tables remain protected behind RLS
 - Repository-wide syntax repair covered Estate Operations and I&I Hypothesis Desk in addition to the earlier hardened modules.
 - Added a GitHub Actions repository-integrity gate on pushes/PRs to main: all JavaScript is syntax-parsed, Garmin Python is compiled, JSON manifests/package files are validated, and committed runtime `.env` files are rejected.
 - Garmin credentials/secrets activation, Connect IQ SDK/device compilation, Supabase leaked-password protection, and the final installed-PWA regression remain intentionally isolated as user/account/device-dependent gates.
+
+
+### 2026-10-02 whole-app authority and offline audit
+- Reconciled the full repository rather than only Care/Garmin: 99 tracked files and 79 JavaScript files; no open repository issues or pull requests and no TODO/FIXME/stub/placeholder/not-implemented markers were found on main.
+- Removed obsolete cloud-auth, install-prompt and service-worker authorities from legacy `app.js`; production ownership now stays with `auth-google.js` and `pwa-runtime.js`.
+- Removed the duplicate legacy `LifeStore` implementation from `reset-once.js`; `state-guard.js` is now the single canonical state authority, with a safe `structuredClone` capability check.
+- Removed the stale duplicate 16-check Release Readiness renderer from System Health; the canonical expanded Release Readiness panel is the only authority.
+- Expanded Release Readiness beyond health to Kitchen, backup/restore, performance, Google auth, Calendar and external metrics.
+- Advanced the PWA shell to v1.3.1 / release31 and expanded offline caching to the complete loaded production module set. All externally loaded browser scripts are now represented in the offline cache.
+- Added FIT decoder dependency installation/syntax validation to the repository integrity workflow and clarified the UI boundary between local FIT validation and decoded ingestion.
+- Expanded the final acceptance runbook to cover the entire Life OS: Today, Habits, Journal, Archive/Chronicle/Search, Conservatory, House/Estate, Kitchen, Life Labs, I&I, Care, Calendar/Cloud, Backup/Privacy, PWA/mobile and Settings.
