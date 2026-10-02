@@ -1,0 +1,1 @@
+{"name":"lifeos-fit-decoder","private":true,"type":"module","dependencies":{"@garmin/fitsdk":"^21.217.0"}}
