@@ -1,0 +1,72 @@
+name: Repository integrity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Parse JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find . -type f -name '*.js' -not -path './node_modules/*' -print0)
+
+      - name: Compile Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q garmin-collector
+
+      - name: Validate JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          targets = [Path("manifest.webmanifest")]
+          targets += list(Path(".").glob("**/package.json"))
+          for path in targets:
+              if "node_modules" in path.parts:
+                  continue
+              print(f"Checking {path}")
+              with path.open(encoding="utf-8") as fh:
+                  json.load(fh)
+          PY
+
+      - name: Guard against committed runtime secret files
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad="$(find . -type f \( -name '.env' -o -name '.env.local' -o -name '.env.production' \) -not -path './node_modules/*' -print)"
+          if [ -n "$bad" ]; then
+            echo "Runtime secret file(s) must not be committed:"
+            echo "$bad"
+            exit 1
+          fi
