@@ -71,7 +71,7 @@ def collect(day=None):
             row={"user_id":USER,"source":"garmin_connect","source_id":str(aid),
                  "started_at":pick(a,"startTimeGMT","startTimeLocal","startTime"),
                  "ended_at":None,"sport":str(atype) if atype is not None else None,
-                 "duration_seconds":num(pick(a,"duration","elapsedDuration")),
+                 "duration_seconds":integer(round(num(pick(a,"duration","elapsedDuration")) or 0)),
                  "distance_m":num(pick(a,"distance")),"calories":num(pick(a,"calories")),
                  "avg_hr":num(pick(a,"averageHR","avgHeartRate")),"max_hr":num(pick(a,"maxHR","maxHeartRate")),
                  "fit_summary":{"activityName":pick(a,"activityName"),"raw":a}}
