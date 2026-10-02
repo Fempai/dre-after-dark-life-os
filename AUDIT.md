@@ -1,6 +1,6 @@
 # Dre After Dark · Life OS — Build & Audit Ledger
 
-Last updated: 2026-09-23 PDT
+Last updated: 2026-10-02 PDT
 
 ## Release-candidate status
 Life OS is CODE-COMPLETE for the currently implementable master scope, excluding external-service blockers and hands-on device/user acceptance testing. “Code-complete” means the planned functional areas have an implemented usable path; it does not mean every future enhancement has been exhausted.
@@ -64,3 +64,19 @@ Backend review: server-only integration/cache tables remain protected behind RLS
 - Repaired a legacy `app.js` syntax corruption and removed a duplicated corrupted tail; core script now parses successfully.
 - Repaired syntax defects in release-readiness, privacy-controls, Chronicle, and Conservatory intelligence modules.
 - Re-verified parsing for Calendar, Google auth, PWA runtime, media store, backup, external metrics, adaptive UI/Today, archive QA, Conservatory command/care/organizer, Today command, Habits command, House command, and Kitchen command.
+
+
+### 2026-10-02 deployment hardening
+- Normalized authenticated health-cloud reads from `health_daily` and recent Garmin activity reads from `health_activities` into Care / Wearable Dashboard.
+- Added authenticated home blood-pressure writes and persistent transparent Recovery Score V2 records in `health_scores`.
+- Hardened the Garmin Connect collector with sleep-score normalization, activity ingestion, bounded 90-day backfill support and production-schema alignment.
+- FIT imports now use deterministic file-content hashes as source identity for reconciliation/deduplication.
+- Connect IQ prototype now capability-checks Body Battery sensor history access before use; SDK compilation/device validation remains an external hands-on gate.
+- Journal uploaded GIF/image/Bitmoji media now persists in IndexedDB `LifeMedia` rather than large localStorage data URLs.
+- PWA offline cache advanced to v1.3.0 and includes the current Journal, health, activity timing, Vertical, cross-domain, Vanity, Body and Kitchen modules.
+- Release Readiness now covers health-state isolation, scoring, Wearable Dashboard, health-cloud bridge, activity timing and Vertical wiring.
+- Legacy object-shaped health state migrates its signals into `healthSignals` while restoring Care notes as the canonical `health` collection.
+- Production Supabase RLS policies were optimized from repeated per-row `auth.uid()` evaluation to `(select auth.uid())`; redundant permissive Quotes write policies were separated by operation.
+- Repository-wide syntax repair covered Estate Operations and I&I Hypothesis Desk in addition to the earlier hardened modules.
+- Added a GitHub Actions repository-integrity gate on pushes/PRs to main: all JavaScript is syntax-parsed, Garmin Python is compiled, JSON manifests/package files are validated, and committed runtime `.env` files are rejected.
+- Garmin credentials/secrets activation, Connect IQ SDK/device compilation, Supabase leaked-password protection, and the final installed-PWA regression remain intentionally isolated as user/account/device-dependent gates.
