@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq"><iq:application id="6f4c6966654f53436f6d70616e696f6e" type="widget" name="@Strings.AppName" entry="LifeOSApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.4.0"><iq:products><iq:product id="venu3"/></iq:products><iq:permissions><iq:uses-permission id="SensorHistory"/><iq:uses-permission id="Communications"/></iq:permissions><iq:languages><iq:language>eng</iq:language></iq:languages></iq:application></iq:manifest>
