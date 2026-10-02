@@ -46,3 +46,29 @@ On the installed Android PWA verify:
 - Garmin credentials are required before real Garmin data can be validated.
 - Connect IQ source still requires Garmin SDK compilation/device testing.
 - Android/Gboard rich GIF insertion into a browser textarea is not exposed reliably; Journal uses the system file/image picker instead.
+
+
+## Whole-app final acceptance
+The user-dependent checkpoint is intentionally broader than Care/Garmin. After all repository-only work is green, perform one installed-Android-PWA acceptance sweep across the complete product:
+
+- Today / Adaptive Today / Vertical: capacity, command summary, completion persistence and reload behavior.
+- Habits: add ritual, start/finish timing, completion correction, curriculum rendering and no duplicate event.
+- Journal: create/edit/search/filter, GIF/image/Bitmoji file picker, IndexedDB media reload, native Share fallback, Markdown/TXT and print/PDF.
+- Archive / Chronicle / Search: range filters, correction, chronology and universal retrieval.
+- Conservatory: search/organization, specimen journal edits, care actions, photos and long-list usability.
+- House / Estate: household workflows, independent cleaner/poop-scoop controls and history.
+- Kitchen: Pantry, Groceries, Leftovers, Meal Prep, Recipe Library, scaling, recipe-to-grocery/prep flows and Meal Intelligence against saved data.
+- Life Lab / Personal Labs: all planned domains render once, save/reopen/delete records, target dates and planning summaries.
+- I&I: reading/idea/publishing/intelligence/hypothesis/completion views and certified WordPress data remain intact.
+- Care: clinician selection/filter/sort/report, BP/cycle signals, Wearable Dashboard, recovery score and recent activities.
+- Calendar / Cloud: Google identity persists, sync/read-back works, Calendar read/create remains connected.
+- Backup / Privacy: export, validated restore path, media inventory and destructive confirmations.
+- PWA / mobile: update prompt, standalone mode, offline navigation, touch targets, no blank reload and acceptable real-device performance.
+- Settings: canonical Release Readiness authority is green and final read-only smoke test passes.
+
+Repository-only gates must be green before this sweep. Failures discovered here return to implementation; subjective UX approval remains a user acceptance gate.
+
+## Intentionally external / excluded
+- Instagram/Meta authorization remains excluded from the release target by product decision.
+- Automated image/recipe recognition requires a real secure vision/import backend and must not be represented as complete.
+- Android/Gboard rich GIF insertion into a browser textarea is not reliably exposed by the platform; Journal supports file/image picker and image URL instead.
