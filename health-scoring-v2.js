@@ -1,7 +1,7 @@
 /* Life OS Recovery / Sleep / Readiness V2 — transparent N-of-1 scoring */
 (function(){'use strict';const K='dreLifeOS',clamp=n=>Math.max(0,Math.min(100,n)),mean=a=>{a=a.filter(Number.isFinite);return a.length?a.reduce((s,x)=>s+x,0)/a.length:null},sd=a=>{let m=mean(a);return m==null?null:Math.sqrt(mean(a.map(x=>(x-m)**2)))},pct=(x,b,s)=>b==null||!s?null:clamp(50+15*(x-b)/s);
 function read(){try{return JSON.parse(localStorage.getItem(K)||'{}')}catch{return{}}}
-function calculate(d=read()){let h=d.health||{},rows=(h.daily||[]).slice().sort((a,b)=>new Date(a.day||a.at)-new Date(b.day||b.at)),x=rows.at(-1)||{},base=rows.slice(-29,-1),parts={},why=[];
+function calculate(d=read()){let h=d.healthSignals||{},rows=(h.daily||[]).slice().sort((a,b)=>new Date(a.day||a.at)-new Date(b.day||b.at)),x=rows.at(-1)||{},base=rows.slice(-29,-1),parts={},why=[];
 let sleep=Number(x.sleepMinutes);if(Number.isFinite(sleep)){parts.sleepDuration=clamp(100-Math.max(0,420-sleep)/4-Math.max(0,sleep-540)/8);why.push(sleep<420?'Sleep was below the adult 7-hour consensus threshold.':'Sleep duration cleared the adult 7-hour consensus threshold.')}
 let hrv=Number(x.hrvMs),hb=mean(base.map(r=>Number(r.hrvMs))),hs=sd(base.map(r=>Number(r.hrvMs)).filter(Number.isFinite));if(Number.isFinite(hrv)&&base.length>=7){parts.hrvBaseline=pct(hrv,hb,hs||Math.max(1,hb*.08));why.push('HRV is interpreted relative to your rolling personal baseline, not a population cutoff.')}
 let rhr=Number(x.restingHr),rb=mean(base.map(r=>Number(r.restingHr))),rs=sd(base.map(r=>Number(r.restingHr)).filter(Number.isFinite));if(Number.isFinite(rhr)&&base.length>=7){let p=pct(rhr,rb,rs||Math.max(1,rb*.04));parts.restingHr=p==null?null:100-p;why.push('Resting HR is interpreted as deviation from your own baseline.')}
