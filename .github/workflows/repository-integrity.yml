@@ -42,6 +42,14 @@ jobs:
           set -euo pipefail
           python -m compileall -q garmin-collector
 
+      - name: Verify FIT decoder install and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd fit-decoder
+          npm install --ignore-scripts --no-audit --no-fund
+          node --check decode-fit.mjs
+
       - name: Validate JSON
         shell: bash
         run: |
