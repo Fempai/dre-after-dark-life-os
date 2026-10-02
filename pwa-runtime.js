@@ -13,7 +13,7 @@ function certify(){let box=document.getElementById('pwaCertification');if(!box)r
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;paint()});
 window.addEventListener('appinstalled',()=>{deferredInstall=null;paint();let t=document.querySelector('#toast');if(t){t.textContent='Life OS installed ✓';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000)}});
 window.addEventListener('load',async()=>{try{
- let r=await navigator.serviceWorker.register('./sw.js?v=20260923-release03',{updateViaCache:'none'});
+ let r=await navigator.serviceWorker.register('./sw.js?v=20261001-release30',{updateViaCache:'none'});
  window.LifePWA={registration:r,update:()=>r.update(),get installed(){return installed()},install:async()=>{if(!deferredInstall)return false;deferredInstall.prompt();let choice=await deferredInstall.userChoice;if(choice.outcome==='accepted')deferredInstall=null;paint();return choice.outcome==='accepted'}};
  let b=document.getElementById('installBtn');if(b)b.onclick=()=>window.LifePWA.install();
  paint();certify();navigator.serviceWorker.addEventListener('controllerchange',certify);
