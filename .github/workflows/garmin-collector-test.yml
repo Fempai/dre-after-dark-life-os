@@ -1,5 +1,9 @@
-name: Garmin collector manual test
+name: Garmin health sync
+
 on:
+  schedule:
+    - cron: '15 14 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       backfill_days:
@@ -22,4 +26,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           LIFEOS_USER_ID: ${{ secrets.LIFEOS_USER_ID }}
-          BACKFILL_DAYS: ${{ inputs.backfill_days }}
+          BACKFILL_DAYS: ${{ inputs.backfill_days || '1' }}
