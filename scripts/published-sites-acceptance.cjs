@@ -12,7 +12,7 @@ const {chromium}=require('playwright');
   await page.waitForSelector('nav#nav button[data-view="plants"]',{timeout:20000});
   await page.locator('nav#nav button[data-view="plants"]').click();
   await page.waitForSelector('#specimenCardsV2>.plant',{timeout:20000});
-  await page.waitForFunction(()=>document.querySelectorAll('#specimenCardsV2>.plant').length>=24,{timeout:15000});
+  await page.waitForFunction(()=>document.querySelectorAll('#specimenCardsV2>.plant').length>=24,null,{timeout:15000});
   const count=await page.locator('#specimenCardsV2>.plant').count();
   if(count<24)throw Error('Conservatory roster has only '+count+' specimens');
   const grid=await page.locator('#specimenCardsV2').evaluate(e=>{const s=getComputedStyle(e);return {columns:s.gridTemplateColumns,display:s.display,width:e.getBoundingClientRect().width}});
