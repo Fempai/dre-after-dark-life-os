@@ -1,0 +1,26 @@
+/* Editorial refinement — November 2026. Presentation only; preserves existing controls and behavior. */
+:root{--editorial-ink:#f1e6e5;--editorial-line:rgba(211,169,154,.19);--editorial-gold:#cdb18b}
+body{background:radial-gradient(ellipse 75% 40% at 50% -10%,rgba(109,48,76,.17),transparent),#130d12;letter-spacing:.005em}
+body::selection{background:#88516b;color:#fff}
+header{max-width:1480px;margin:0 auto;padding:clamp(22px,4vw,54px) clamp(18px,4vw,62px) 25px;border-bottom:1px solid var(--editorial-line)}
+header h1{font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(2.35rem,5.2vw,5rem)!important;line-height:1.07!important;font-weight:400!important;letter-spacing:-.035em;max-width:900px}
+header .eyebrow,.eyebrow{font-size:.68rem!important;font-weight:600;letter-spacing:.19em!important;text-transform:uppercase;color:var(--editorial-gold)!important}
+nav#nav{position:sticky;top:0;z-index:25;background:rgba(20,12,19,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--editorial-line);padding:9px clamp(12px,3vw,40px);gap:3px;scrollbar-width:thin}
+nav#nav button{border:0!important;border-bottom:1px solid transparent!important;border-radius:0!important;background:transparent!important;padding:12px 13px!important;font-size:.78rem!important;letter-spacing:.025em;white-space:nowrap;min-height:42px;transition:color .2s,border-color .2s}
+nav#nav button.active,nav#nav button:hover{color:#f5e6d8!important;border-bottom-color:var(--editorial-gold)!important}
+main{max-width:1480px!important;margin:0 auto!important;padding:clamp(18px,3.6vw,52px)!important}
+.view>h2,.view h2,.sectionhead h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.02em}
+.card,.archive-section{border:1px solid var(--editorial-line)!important;border-radius:9px!important;background:linear-gradient(155deg,rgba(59,32,48,.48),rgba(25,16,25,.75))!important;box-shadow:none!important}
+.card h3{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.015em}
+.card,.archive-section{padding:clamp(16px,2vw,27px)}
+input,textarea,select{border-radius:6px!important;border-color:rgba(205,177,139,.2)!important;background:rgba(13,9,15,.4)!important}
+button:not(#nav button){border-radius:6px;transition:filter .18s,transform .18s}
+button:not(#nav button):hover{filter:brightness(1.12)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #d9b88b;outline-offset:3px}
+details{border-color:var(--editorial-line)}
+details>summary{font-family:Georgia,'Times New Roman',serif;letter-spacing:.005em}
+#privacyControls .card,#releaseReadiness .card{border-left:2px solid rgba(205,177,139,.65)!important}
+#privacyControls button{margin:6px 6px 4px 0}
+@media(max-width:650px){header{padding:23px 18px 19px}header h1{font-size:2.65rem!important}main{padding:18px 13px!important}nav#nav{padding:6px 8px}nav#nav button{padding:10px 11px!important;font-size:.74rem!important}.card,.archive-section{padding:17px!important;border-radius:7px!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media print{nav#nav{display:none!important}body{background:#fff!important}}
