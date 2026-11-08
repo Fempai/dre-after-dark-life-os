@@ -24,3 +24,31 @@ details>summary{font-family:Georgia,'Times New Roman',serif;letter-spacing:.005e
 @media(max-width:650px){header{padding:23px 18px 19px}header h1{font-size:2.65rem!important}main{padding:18px 13px!important}nav#nav{padding:6px 8px}nav#nav button{padding:10px 11px!important;font-size:.74rem!important}.card,.archive-section{padding:17px!important;border-radius:7px!important}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 @media print{nav#nav{display:none!important}body{background:#fff!important}}
+
+/* Edition II: unmistakable editorial structure, not a dashboard recolor */
+.editorial-masthead{width:100%;border-top:1px solid rgba(205,177,139,.55);border-bottom:1px solid rgba(205,177,139,.5);padding:13px 0 16px;margin-bottom:28px;text-align:center}
+.editorial-issue{display:flex;justify-content:space-between;gap:12px;font:600 10px/1.4 system-ui,sans-serif;letter-spacing:.2em;color:#cdb18b}
+.editorial-brand{font:400 clamp(2.2rem,7.3vw,7.1rem)/1.04 Georgia,'Times New Roman',serif;letter-spacing:-.065em;color:#f3e7e3;margin:16px 0 12px;white-space:nowrap}
+.editorial-brand em{font-weight:400;font-style:italic;color:#cdb18b}
+.editorial-brand-sub{display:block;margin-top:9px;font:600 clamp(9px,1vw,12px)/1.4 system-ui,sans-serif;letter-spacing:.38em;color:#cdb18b}
+.editorial-rule{display:flex;align-items:center;justify-content:center;gap:clamp(15px,4vw,64px);border-top:1px solid rgba(205,177,139,.27);padding-top:13px;font:600 10px/1.4 system-ui,sans-serif;letter-spacing:.18em;color:#bca6a5}
+.editorial-intro{max-width:1000px;margin:0 auto 8px;text-align:center}
+.editorial-intro h1{max-width:none;font-size:clamp(1.8rem,3.2vw,3rem)!important;font-style:italic;letter-spacing:-.02em!important;color:#e8d8d3}
+.editorial-intro .daily-quote{margin:15px auto 0;max-width:660px;border:0;background:none;text-align:center}
+.editorial-intro .quote{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:clamp(.9rem,1.5vw,1.1rem)}
+header{display:block!important}
+header #installBtn{position:absolute;right:clamp(18px,4vw,62px);top:15px}
+nav#nav{justify-content:center!important;border-top:1px solid rgba(205,177,139,.2);box-shadow:0 10px 28px rgba(0,0,0,.16)}
+main>.view{max-width:1260px;margin:0 auto}
+main>.view>h2:first-child{font-size:clamp(2.1rem,4vw,3.7rem);padding-bottom:15px;margin-bottom:25px;border-bottom:1px solid rgba(205,177,139,.32)}
+main .card{position:relative}
+main .hero.card{border-top:2px solid #cdb18b!important;background:linear-gradient(125deg,rgba(91,43,67,.43),rgba(24,15,23,.8))!important}
+main .hero.card h2{font-size:clamp(2rem,4vw,3.6rem);line-height:1.15}
+main .card .eyebrow{margin-bottom:12px}
+main .grid.two{gap:clamp(12px,2vw,24px)}
+#today details.today-fold{border:1px solid rgba(205,177,139,.17);border-radius:6px;margin:18px 0;overflow:hidden}
+#today details.today-fold>summary{padding:18px 22px;background:linear-gradient(90deg,rgba(83,39,61,.2),transparent);font-size:1.15rem}
+#today details.today-fold>summary small{font-family:system-ui,sans-serif;font-size:.75rem;letter-spacing:.025em}
+#today .today-fold-body{padding:16px}
+#today .today-fold-body .card{min-height:unset}
+@media(max-width:650px){.editorial-masthead{margin-bottom:19px;padding:10px 0 14px}.editorial-issue{font-size:8px;letter-spacing:.1em}.editorial-brand{font-size:clamp(1.85rem,8.3vw,3.3rem);letter-spacing:-.065em;margin:18px 0 12px}.editorial-brand-sub{font-size:8px;letter-spacing:.22em}.editorial-rule{gap:12px;font-size:8px;letter-spacing:.075em;justify-content:space-between}.editorial-intro h1{font-size:1.9rem!important}.editorial-intro .daily-quote{margin-top:8px}header #installBtn{position:static;margin:8px auto 0;display:block}header #installBtn.hidden{display:none}nav#nav{justify-content:flex-start!important}#today details.today-fold>summary{padding:16px}#today .today-fold-body{padding:10px}main .hero.card h2{font-size:2.1rem}}
