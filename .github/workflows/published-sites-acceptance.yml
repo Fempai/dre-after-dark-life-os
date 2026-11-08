@@ -1,5 +1,9 @@
 name: Published Life OS and Movement browser acceptance
 on:
+  push:
+    paths:
+      - 'scripts/published-sites-acceptance.cjs'
+      - '.github/workflows/published-sites-acceptance.yml'
   workflow_dispatch:
   schedule:
     - cron: '30 15 * * 1'
