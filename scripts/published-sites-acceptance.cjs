@@ -4,6 +4,7 @@ const {chromium}=require('playwright');
  const browser=await chromium.launch({headless:true});
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+  await page.addInitScript(()=>{try{localStorage.removeItem('dreLifeOS');localStorage.removeItem('dreLifeOS_conservatory_roster_restore_2026_11_08')}catch{}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const url='https://fempai.github.io/dre-after-dark-life-os/';
   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
@@ -11,6 +12,7 @@ const {chromium}=require('playwright');
   await page.waitForSelector('nav#nav button[data-view="plants"]',{timeout:20000});
   await page.locator('nav#nav button[data-view="plants"]').click();
   await page.waitForSelector('#specimenCardsV2>.plant',{timeout:20000});
+  await page.waitForFunction(()=>document.querySelectorAll('#specimenCardsV2>.plant').length>=24,{timeout:15000});
   const count=await page.locator('#specimenCardsV2>.plant').count();
   if(count<24)throw Error('Conservatory roster has only '+count+' specimens');
   const grid=await page.locator('#specimenCardsV2').evaluate(e=>{const s=getComputedStyle(e);return {columns:s.gridTemplateColumns,display:s.display,width:e.getBoundingClientRect().width}});
