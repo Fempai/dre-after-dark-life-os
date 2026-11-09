@@ -12,8 +12,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await page.locator('#vaultPass').fill(pass);
  await page.locator('#vaultConfirm').fill(pass);
  const pair=await page.evaluate(()=>({a:document.getElementById('vaultPass').value,b:document.getElementById('vaultConfirm').value}));assert.equal(pair.a,pair.b,'Passphrase input values diverged');assert.ok(pair.a.length>=12);await page.locator('#vaultAction').click();
- await page.locator('#vaultNew').waitFor({timeout:12000}).catch(async e=>{throw Error('Vault creation failed: '+await page.locator('#journalRoot').innerText()+'; browser: '+errors.join('; ').slice(0,1200))});
- await page.locator('#vaultNew').click();
+ await page.locator('#vaultRecoveryDisplay').waitFor({timeout:12000}).catch(async e=>{throw Error('Vault creation failed: '+await page.locator('#journalRoot').innerText()+'; browser: '+errors.join('; ').slice(0,1200))});
+ const recoveryKey=await page.locator('#vaultRecoveryDisplay').inputValue();assert.match(recoveryKey,/^[a-f0-9-]{71}$/,'Recovery key format');await page.locator('#vaultRecoverySaved').click();await page.locator('#vaultNew').waitFor();await page.locator('#vaultNew').click();
  const marker='PRIVATE_ACCEPTANCE_MARKER_'+Date.now();
  await page.locator('#vaultTitle').fill('Secret title '+marker);
  await page.locator('#vaultBody').fill('Secret body '+marker);
@@ -43,13 +43,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const beforeMigration=await legacy.evaluate(()=>{const d=JSON.parse(localStorage.getItem('dreLifeOS')||'{}');return {count:Array.isArray(d.journal?.entries)?d.journal.entries.length:-1,hasLegacy:JSON.stringify(d).includes('LEGACY_PRIVATE_MARKER_')}});assert.ok(beforeMigration.hasLegacy,'Legacy data was replaced before migration: '+JSON.stringify(beforeMigration));await legacy.locator('#vaultPass').waitFor();await legacy.waitForTimeout(3000);await legacy.locator('#vaultPass').fill(pass);
  await legacy.locator('#vaultConfirm').fill(pass);
  await legacy.locator('#vaultAction').click();
- await legacy.locator('#vaultNew').waitFor({timeout:12000}).catch(async e=>{throw Error('Legacy migration failed: '+await legacy.locator('#journalRoot').innerText())});
- const migrated=await legacy.evaluate(()=>localStorage.getItem('dreLifeOS'));
+ await legacy.locator('#vaultRecoveryDisplay').waitFor({timeout:12000}).catch(async e=>{throw Error('Legacy migration failed: '+await legacy.locator('#journalRoot').innerText())});
+ await legacy.locator('#vaultRecoverySaved').click();const migrated=await legacy.evaluate(()=>localStorage.getItem('dreLifeOS'));
  assert.ok(!migrated.includes(oldMarker),'Legacy journal plaintext survived migration');
  assert.ok(migrated.includes('journalVault'),'Legacy vault not saved');
  const migratedUI=await legacy.locator('#vaultList').innerText();assert.ok(migratedUI.includes('Legacy'),'Legacy entry missing after encryption: '+migratedUI.slice(0,400));
  await legacy.close();
- await page.locator('nav#nav button[data-view="archive"]').click();
+ await page.locator('#vaultLock').click();await page.locator('#vaultRecoverShow').click();await page.locator('#vaultRecoveryInput').fill(recoveryKey);await page.locator('#vaultRecoverAction').click();await page.locator('#vaultNewPass').waitFor({timeout:30000});const newPass='recovered-passphrase-'+Date.now();await page.locator('#vaultNewPass').fill(newPass);await page.locator('#vaultNewConfirm').fill(newPass);await page.locator('#vaultResetPass').click();await page.locator('#vaultNew').waitFor({timeout:30000});assert.equal(await page.locator('#vaultList').getByText('Secret title '+marker).count(),1,'Recovery lost the entry');await page.locator('nav#nav button[data-view="archive"]').click();
  const archive=await page.locator('#archive').innerText();
  assert.ok(!archive.includes(marker),'Private entry leaked into archive');
  const search=await page.evaluate(()=>JSON.stringify(window.LifeSearch?.records?.()||[]));
