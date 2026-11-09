@@ -1,5 +1,5 @@
 'use strict';
-const {chromium}=require('playwright'),assert=require('node:assert/strict');
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
@@ -22,6 +22,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  const stored=await page.evaluate(()=>localStorage.getItem('dreLifeOS'));
  assert.ok(stored.includes('journalVault'),'Encrypted vault missing');
  assert.ok(!stored.includes(marker),'Journal plaintext persisted in localStorage');
+ const backupWait=page.waitForEvent('download');await page.evaluate(()=>window.LifeBackup.exportBackup());const backup=await backupWait;const backupBytes=fs.readFileSync(await backup.path(),'utf8');assert.ok(backupBytes.includes('journalVault'),'Encrypted vault absent from backup');assert.ok(!backupBytes.includes(marker),'Plaintext journal leaked into backup');
  await page.locator('#vaultLock').click();
  assert.equal(await page.locator('#vaultBody').count(),0,'Editor visible while locked');
  await page.locator('#vaultPass').fill('incorrect-passphrase');
