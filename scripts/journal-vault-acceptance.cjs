@@ -1,0 +1,43 @@
+'use strict';
+const {chromium}=require('playwright'),assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({headless:true});
+ try{
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
+ await page.goto('https://fempai.github.io/dre-after-dark-life-os/',{waitUntil:'domcontentloaded'});
+ await page.locator('nav#nav button[data-view="journal"]').click();
+ await page.locator('#vaultPass').waitFor({timeout:20000});
+ const pass='acceptance-only-'+Date.now()+'-random-secret';
+ await page.locator('#vaultPass').fill(pass);
+ await page.locator('#vaultConfirm').fill(pass);
+ await page.locator('#vaultAction').click();
+ await page.locator('#vaultNew').waitFor({timeout:30000});
+ await page.locator('#vaultNew').click();
+ const marker='PRIVATE_ACCEPTANCE_MARKER_'+Date.now();
+ await page.locator('#vaultTitle').fill('Secret title '+marker);
+ await page.locator('#vaultBody').fill('Secret body '+marker);
+ await page.locator('#vaultSave').click();
+ await page.locator('#vaultLock').waitFor({timeout:20000});
+ const stored=await page.evaluate(()=>localStorage.getItem('dreLifeOS'));
+ assert.ok(stored.includes('journalVault'),'Encrypted vault missing');
+ assert.ok(!stored.includes(marker),'Journal plaintext persisted in localStorage');
+ await page.locator('#vaultLock').click();
+ assert.equal(await page.locator('#vaultBody').count(),0,'Editor visible while locked');
+ await page.locator('#vaultPass').fill('incorrect-passphrase');
+ await page.locator('#vaultAction').click();
+ await page.locator('#vaultStatus').filter({hasText:'Unable to unlock'}).waitFor();
+ assert.equal(await page.locator('#vaultNew').count(),0,'Wrong password unlocked journal');
+ await page.locator('#vaultPass').fill(pass);
+ await page.locator('#vaultAction').click();
+ await page.locator('#vaultNew').waitFor({timeout:30000});
+ assert.equal(await page.locator('#vaultList').getByText('Secret title '+marker).count(),1,'Unlock failed to recover entry');
+ await page.locator('nav#nav button[data-view="archive"]').click();
+ const archive=await page.locator('#archive').innerText();
+ assert.ok(!archive.includes(marker),'Private entry leaked into archive');
+ const search=await page.evaluate(()=>JSON.stringify(window.LifeSearch?.records?.()||[]));
+ assert.ok(!search.includes(marker),'Private entry leaked into universal search');
+ assert.equal(errors.length,0,'Browser exceptions: '+errors.join('; ').slice(0,1000));
+ console.log('PASS: AES-GCM journal ciphertext, wrong-passphrase rejection, lock, recovery, and archive/search isolation');
+ }finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exitCode=1});
