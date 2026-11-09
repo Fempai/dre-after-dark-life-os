@@ -29,7 +29,7 @@ const {chromium}=require('playwright');
   if(!ar||!ar.ok())throw Error('Movement homepage returned '+ar?.status());
   const wr=await academy.goto('https://fempai.github.io/The-Art-of-Movement/weekday-bfr-plan.html',{waitUntil:'domcontentloaded',timeout:45000});
   if(!wr||!wr.ok())throw Error('Movement BFR plan returned '+wr?.status());
-  if(!/November 9, 2026/.test(await academy.locator('body').innerText()))throw Error('Movement Nov 9 start date missing');
+  const movementText=await academy.locator('body').innerText();if(!/november\s+9,?\s+2026/i.test(movementText))throw Error('Movement Nov 9 start date missing: '+movementText.slice(0,500));
   console.log('PASS Movement published homepage and Nov 9 BFR plan: HTTP '+ar.status()+'/'+wr.status());
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
