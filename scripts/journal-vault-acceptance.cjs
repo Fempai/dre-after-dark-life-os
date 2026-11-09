@@ -30,8 +30,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  restored.on('dialog',dialog=>dialog.accept());
  await restored.locator('#importInput').setInputFiles({name:'journal-test-backup.json',mimeType:'application/json',buffer:Buffer.from(backupBytes)});
  await restored.waitForFunction(()=>{try{const d=JSON.parse(localStorage.getItem('dreLifeOS')||'{}');return !!(d.journalVault&&d.journalRecovery&&d.journalRecoveryAccess)}catch{return false}},null,{timeout:20000});
- await restored.waitForLoadState('domcontentloaded');
- await restored.locator('nav#nav button[data-view="journal"]').click();
+ await restored.reload({waitUntil:'domcontentloaded'});
+ await restored.waitForFunction(()=>!!(window.JournalPremium&&document.getElementById('journalRoot')));
+ await restored.evaluate(()=>window.JournalPremium.render());
+ await restored.locator('#vaultPass').waitFor({timeout:20000});
  await restored.locator('#vaultPass').fill(pass);
  await restored.locator('#vaultAction').click();
  await restored.locator('#vaultNew').waitFor({timeout:30000});
