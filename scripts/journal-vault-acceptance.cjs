@@ -35,8 +35,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  // A separate browser context verifies lossless legacy plaintext migration.
  const legacy=await browser.newPage();
  const oldMarker='LEGACY_PRIVATE_MARKER_'+Date.now();
- await legacy.addInitScript(marker=>{localStorage.setItem('dreLifeOS',JSON.stringify({journal:{entries:[{id:'legacy-entry',at:'2026-11-08T12:00:00.000Z',title:'Legacy',body:marker}]},plants:[],events:[]}))},oldMarker);
- await legacy.goto('https://fempai.github.io/dre-after-dark-life-os/',{waitUntil:'domcontentloaded'});
+ await legacy.goto('https://fempai.github.io/dre-after-dark-life-os/',{waitUntil:'domcontentloaded'});await legacy.waitForTimeout(2500);
+ await legacy.evaluate(marker=>{const d=JSON.parse(localStorage.getItem('dreLifeOS')||'{}');d.journal={entries:[{id:'legacy-entry',at:'2026-11-08T12:00:00.000Z',title:'Legacy',body:marker}]};localStorage.setItem('dreLifeOS',JSON.stringify(d))},oldMarker);
+ await legacy.reload({waitUntil:'domcontentloaded'});
  await legacy.locator('nav#nav button[data-view="journal"]').click();
  const beforeMigration=await legacy.evaluate(()=>{const d=JSON.parse(localStorage.getItem('dreLifeOS')||'{}');return {count:Array.isArray(d.journal?.entries)?d.journal.entries.length:-1,hasLegacy:JSON.stringify(d).includes('LEGACY_PRIVATE_MARKER_')}});assert.ok(beforeMigration.hasLegacy,'Legacy data was replaced before migration: '+JSON.stringify(beforeMigration));await legacy.locator('#vaultPass').waitFor();await legacy.waitForTimeout(3000);await legacy.locator('#vaultPass').fill(pass);
  await legacy.locator('#vaultConfirm').fill(pass);
