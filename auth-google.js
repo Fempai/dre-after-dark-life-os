@@ -60,6 +60,23 @@ async function restoreCloudIfNeeded(session){
  const cloud=data.settings.life_os;if(cloud.journalVault&&(!cloud.journalRecovery||!cloud.journalRecoveryAccess))return paintError('Cloud restore blocked: journal recovery data is incomplete.');
  saveLocal(data.settings.life_os);localStorage.setItem('dreLifeOSCloudUser',session.user.id);location.reload();
 }
+async function restoreCloudManually(){
+ const {data:{session}}=await client.auth.getSession();if(!session)return paintError('Sign in with Google before restoring.');
+ const result=await client.from('life_os_profiles').select('settings').eq('user_id',session.user.id).maybeSingle();
+ if(result.error)return paintError('Cloud restore read failed: '+result.error.message);
+ const cloud=result.data?.settings?.life_os;if(!cloud?.journalVault)return paintError('No encrypted journal vault was found in this cloud account. Your local data was not changed.');
+ if(!cloud.journalRecovery||!cloud.journalRecoveryAccess)return paintError('Cloud vault recovery information is incomplete. Your local data was not changed.');
+ const current=localState();
+ if(current?.journalVault)return paintError('A local encrypted vault already exists. Cloud restoration was blocked to avoid overwriting it.');
+ if(!confirm('Restore the encrypted Life OS cloud snapshot to this browser? This replaces local Life OS data on this browser. Do not proceed if this browser has unsynced information.'))return;
+ try{
+  if(current)localStorage.setItem('dreLifeOSBeforeCloudRestore_'+Date.now(),JSON.stringify(current));
+  saveLocal(cloud);localStorage.setItem('dreLifeOSCloudUser',session.user.id);
+  const verified=localState();
+  if(!equivalent(verified,cloud))throw Error('Local read-back did not match the cloud snapshot');
+  location.reload();
+ }catch(e){paintError('Cloud restoration failed: '+e.message)}
+}
 function paintError(t){const x=document.getElementById('cloudState');if(x)x.textContent='Sign-in needs attention: '+t}
 async function paint(session){
  if(session===undefined){const r=await client.auth.getSession();session=r.data.session}
@@ -71,8 +88,8 @@ function upgrade(){
  const cloud=document.getElementById('cloudState')?.closest('article');if(!cloud)return;
  ['email','password','signup','signin','signout'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
  let g=document.getElementById('googleLifeSignIn');if(!g){const wrap=document.createElement('div');wrap.innerHTML=`<button id="googleLifeSignIn" class="primary" style="width:100%;margin:.75rem 0">G&nbsp;&nbsp; Continue with Google</button><button id="googleLifeSignOut" class="ghost hidden" style="width:100%;margin:.5rem 0">Sign out of Life OS</button><p class="quiet">One Supabase identity protects Life OS cloud sync and authorizes persistent integrations.</p>`;cloud.insertBefore(wrap,document.getElementById('syncBtn'));g=document.getElementById('googleLifeSignIn')}
- g.onclick=signIn;document.getElementById('googleLifeSignOut').onclick=signOut;const s=document.getElementById('syncBtn');if(s)s.onclick=syncNow;
+ g.onclick=signIn;document.getElementById('googleLifeSignOut').onclick=signOut;const s=document.getElementById('syncBtn');if(s)s.onclick=syncNow;let restore=document.getElementById('cloudRestoreBtn');if(!restore){restore=document.createElement('button');restore.id='cloudRestoreBtn';restore.className='ghost';restore.textContent='Restore encrypted cloud snapshot';restore.style.marginLeft='.5rem';s?.insertAdjacentElement('afterend',restore)}restore.onclick=restoreCloudManually;
 }
-window.LifeAuth={signIn,signOut,syncNow,getClient:async()=>{await ready;return client},getSession:async()=>{await ready;return (await client.auth.getSession()).data.session},ready};
+window.LifeAuth={signIn,signOut,syncNow,restoreCloudManually,getClient:async()=>{await ready;return client},getSession:async()=>{await ready;return (await client.auth.getSession()).data.session},ready};
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot):boot();
 })();
