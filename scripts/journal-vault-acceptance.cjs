@@ -18,11 +18,12 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await page.locator('#vaultTitle').fill('Secret title '+marker);
  await page.locator('#vaultBody').fill('Secret body '+marker);
  await page.locator('#vaultSave').click();
+ await page.locator('#vaultList').getByText('Secret title '+marker).waitFor({timeout:20000});
  await page.locator('#vaultLock').waitFor({timeout:20000});
  const stored=await page.evaluate(()=>localStorage.getItem('dreLifeOS'));
  assert.ok(stored.includes('journalVault'),'Encrypted vault missing');
  assert.ok(!stored.includes(marker),'Journal plaintext persisted in localStorage');
- const backupWait=page.waitForEvent('download');await page.evaluate(()=>window.LifeBackup.exportBackup());const backup=await backupWait;const backupBytes=fs.readFileSync(await backup.path(),'utf8');assert.ok(backupBytes.includes('journalVault'),'Encrypted vault absent from backup');assert.ok(!backupBytes.includes(marker),'Plaintext journal leaked into backup');
+ const backupWait=page.waitForEvent('download');await page.evaluate(()=>window.LifeBackup.exportBackup());const backup=await backupWait;const backupBytes=fs.readFileSync(await backup.path(),'utf8');assert.ok(backupBytes.includes('journalVault'),'Encrypted vault absent from backup');assert.deepEqual(JSON.parse(backupBytes).journalVault,JSON.parse(stored).journalVault,'Exported vault differs from saved vault');assert.ok(!backupBytes.includes(marker),'Plaintext journal leaked into backup');
  // Restore the downloaded encrypted backup in a fresh, isolated browser context.
  const restored=await browser.newPage({acceptDownloads:true});
  await restored.goto('https://fempai.github.io/dre-after-dark-life-os/',{waitUntil:'domcontentloaded'});
