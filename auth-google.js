@@ -38,7 +38,7 @@ function saveLocal(v){localStorage.setItem('dreLifeOS',JSON.stringify(v))}
 async function syncNow(){
  const {data:{session}}=await client.auth.getSession();if(!session){paintError('Sign in with Google first.');return}
  const x=document.getElementById('cloudState');if(x)x.textContent='Syncing Life OS to Supabase…';
- const snapshot=localState()||{};
+ const snapshot=localState()||{};if((Array.isArray(snapshot.journal)&&snapshot.journal.length)||(Array.isArray(snapshot.journal?.entries)&&snapshot.journal.entries.length))return paintError('Cloud sync blocked: migrate plaintext journal entries into your encrypted vault first.');
  const {error}=await client.from('life_os_profiles').upsert({user_id:session.user.id,settings:{life_os:snapshot},updated_at:new Date().toISOString()},{onConflict:'user_id'});
  if(error)return paintError(error.message);
  const verify=await client.from('life_os_profiles').select('settings,updated_at').eq('user_id',session.user.id).maybeSingle();
