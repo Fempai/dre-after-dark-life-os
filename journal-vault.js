@@ -11,7 +11,7 @@ async function keyFrom(pass,salt){const material=await crypto.subtle.importKey('
 async function seal(data,key,salt){const iv=rand(12),raw=encoder.encode(JSON.stringify(data)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,raw);return {version:1,algorithm:'AES-256-GCM',kdf:'PBKDF2-SHA256',iterations:310000,salt:bytes(salt),iv:bytes(iv),ciphertext:bytes(new Uint8Array(cipher))}}
 async function open(v,key){const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv:new Uint8Array(v.iv)},key,new Uint8Array(v.ciphertext));const obj=JSON.parse(decoder.decode(raw));if(!Array.isArray(obj))throw Error('Invalid vault');return obj}
 function legacy(d){return Array.isArray(d.journal)?d.journal:Array.isArray(d.journal?.entries)?d.journal.entries:[]}
-function wipeLegacy(d){delete d.journal;delete d.commandCenter?.chronicle;return d}
+function wipeLegacy(d){delete d.journal;return d}
 function lock(){secret=null;entries=null;render()}
 async function persist(){if(!secret||!entries)throw Error('Journal locked');const d=read(),v=d.journalVault;if(!v)throw Error('Vault missing');d.journalVault=await seal(entries,secret,v.salt);wipeLegacy(d);write(d);lastActivity=Date.now()}
 async function setup(){const p=$('vaultPass')?.value||'',confirm=$('vaultConfirm')?.value||'';if(p.length<12||p!==confirm){$('vaultStatus').textContent='Use a matching passphrase of at least 12 characters.';return}const d=read();if(d.journalVault){$('vaultStatus').textContent='Vault already exists. Unlock it instead.';return}const salt=rand(16),k=await keyFrom(p,salt),old=legacy(d);const v=await seal(old,k,salt);d.journalVault=v;wipeLegacy(d);write(d);secret=k;entries=old;lastActivity=Date.now();render()}
