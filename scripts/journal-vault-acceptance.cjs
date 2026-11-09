@@ -23,6 +23,22 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  assert.ok(stored.includes('journalVault'),'Encrypted vault missing');
  assert.ok(!stored.includes(marker),'Journal plaintext persisted in localStorage');
  const backupWait=page.waitForEvent('download');await page.evaluate(()=>window.LifeBackup.exportBackup());const backup=await backupWait;const backupBytes=fs.readFileSync(await backup.path(),'utf8');assert.ok(backupBytes.includes('journalVault'),'Encrypted vault absent from backup');assert.ok(!backupBytes.includes(marker),'Plaintext journal leaked into backup');
+ // Restore the downloaded encrypted backup in a fresh, isolated browser context.
+ const restored=await browser.newPage({acceptDownloads:true});
+ await restored.goto('https://fempai.github.io/dre-after-dark-life-os/',{waitUntil:'domcontentloaded'});
+ await restored.locator('nav#nav button[data-view="journal"]').click();
+ restored.on('dialog',dialog=>dialog.accept());
+ await restored.locator('#importInput').setInputFiles({name:'journal-test-backup.json',mimeType:'application/json',buffer:Buffer.from(backupBytes)});
+ await restored.locator('#backupStatus').filter({hasText:'Backup restored successfully'}).waitFor({timeout:20000});
+ await restored.waitForLoadState('domcontentloaded');
+ await restored.locator('nav#nav button[data-view="journal"]').click();
+ await restored.locator('#vaultPass').fill(pass);
+ await restored.locator('#vaultAction').click();
+ await restored.locator('#vaultNew').waitFor({timeout:30000});
+ assert.equal(await restored.locator('#vaultList').getByText('Secret title '+marker).count(),1,'Backup restore did not recover entry');
+ const restoredData=await restored.evaluate(()=>JSON.parse(localStorage.getItem('dreLifeOS')||'{}'));
+ assert.ok(restoredData.journalRecovery&&restoredData.journalRecoveryAccess,'Backup restore lost recovery metadata');
+ await restored.close();
  await page.locator('#vaultLock').click();
  assert.equal(await page.locator('#vaultBody').count(),0,'Editor visible while locked');
  await page.locator('#vaultPass').fill('incorrect-passphrase');
