@@ -35,6 +35,8 @@ async function signIn(){
 async function signOut(){await client.auth.signOut();await paint(null)}
 function localState(){try{return JSON.parse(localStorage.getItem('dreLifeOS')||'null')}catch{return null}}
 function saveLocal(v){localStorage.setItem('dreLifeOS',JSON.stringify(v))}
+function canonical(value){if(Array.isArray(value))return value.map(canonical);if(value&&typeof value==='object'){const out={};for(const key of Object.keys(value).sort())out[key]=canonical(value[key]);return out}return value}
+function equivalent(a,b){return JSON.stringify(canonical(a))===JSON.stringify(canonical(b))}
 async function syncNow(){
  const {data:{session}}=await client.auth.getSession();if(!session){paintError('Sign in with Google first.');return}
  const x=document.getElementById('cloudState');if(x)x.textContent='Syncing Life OS to Supabase…';
@@ -48,7 +50,7 @@ async function syncNow(){
  if(!remote||typeof remote!=='object')return paintError('Upload completed, but the cloud copy could not be verified.');
  const localBytes=new Blob([JSON.stringify(snapshot)]).size,remoteBytes=new Blob([JSON.stringify(remote)]).size;
  const localEvents=Array.isArray(snapshot.events)?snapshot.events.length:0,remoteEvents=Array.isArray(remote.events)?remote.events.length:0;
- if(JSON.stringify(snapshot)!==JSON.stringify(remote)||localBytes!==remoteBytes||localEvents!==remoteEvents)return paintError(`Cloud verification mismatch (local ${localBytes} B/${localEvents} events; cloud ${remoteBytes} B/${remoteEvents} events).`);
+ if(!equivalent(snapshot,remote)||localBytes!==remoteBytes||localEvents!==remoteEvents)return paintError(`Cloud verification mismatch (local ${localBytes} B/${localEvents} events; cloud ${remoteBytes} B/${remoteEvents} events).`);
  localStorage.setItem('dreLifeOSCloudUser',session.user.id);if(x)x.textContent=`Cloud verified · ${session.user.email||'Google account'} · ${remoteBytes} B · ${remoteEvents} events · ${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`;
 }
 async function restoreCloudIfNeeded(session){
