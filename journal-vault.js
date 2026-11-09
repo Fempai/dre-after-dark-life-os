@@ -5,7 +5,7 @@ let secret=null,entries=null,lastActivity=0;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}};
-const write=d=>{localStorage.setItem(KEY,JSON.stringify(d));window.dispatchEvent(new CustomEvent('lifeos:data-changed',{detail:{source:'journal-vault'}}))};
+const write=d=>{if(window.LifeStore?.mutate)window.LifeStore.mutate(()=>d,'journal-vault');else{localStorage.setItem(KEY,JSON.stringify(d));window.dispatchEvent(new CustomEvent('lifeos:data-changed',{detail:{source:'journal-vault'}}))}};
 const bytes=b=>Array.from(b),rand=n=>crypto.getRandomValues(new Uint8Array(n));
 async function keyFrom(pass,salt){const material=await crypto.subtle.importKey('raw',encoder.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:new Uint8Array(salt),iterations:310000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function seal(data,key,salt){const iv=rand(12),raw=encoder.encode(JSON.stringify(data)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,raw);return {version:1,algorithm:'AES-256-GCM',kdf:'PBKDF2-SHA256',iterations:310000,salt:bytes(salt),iv:bytes(iv),ciphertext:bytes(new Uint8Array(cipher))}}
