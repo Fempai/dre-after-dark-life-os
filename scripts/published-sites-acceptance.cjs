@@ -5,7 +5,7 @@ const {chromium}=require('playwright');
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
   await page.addInitScript(()=>{try{localStorage.removeItem('dreLifeOS');localStorage.removeItem('dreLifeOS_conservatory_roster_restore_2026_11_08')}catch{}});
-  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
   const url='https://fempai.github.io/dre-after-dark-life-os/';
   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
   if(!response||!response.ok())throw Error('Life OS returned '+response?.status());
@@ -22,7 +22,7 @@ const {chromium}=require('playwright');
   const readiness=await page.locator('#releaseReadiness').innerText();
   if(!/28\/28 runtime checks passing/.test(readiness))throw Error('Readiness is not 28/28: '+readiness.slice(0,180));
   if(!await page.locator('#privacyControls [data-clear-life]').count())throw Error('Local data controls absent');
-  if(errors.length)throw Error('Browser exceptions: '+errors.slice(0,5).join('; '));
+  if(errors.length)throw Error('Browser exceptions:\n'+errors.slice(0,8).join('\n---\n'));
   console.log('PASS Life OS published mobile: HTTP '+response.status()+', specimens '+count+', grid '+JSON.stringify(grid)+', 28/28 checks, privacy controls present');
   const academy=await browser.newPage({viewport:{width:390,height:844}});
   const ar=await academy.goto('https://fempai.github.io/The-Art-of-Movement/',{waitUntil:'domcontentloaded',timeout:45000});
