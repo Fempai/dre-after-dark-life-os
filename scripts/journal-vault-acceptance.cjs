@@ -11,7 +11,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  const pass='acceptance-only-'+Date.now()+'-random-secret';
  await page.locator('#vaultPass').fill(pass);
  await page.locator('#vaultConfirm').fill(pass);
- await page.locator('#vaultAction').click();
+ const pair=await page.evaluate(()=>({a:document.getElementById('vaultPass').value,b:document.getElementById('vaultConfirm').value}));assert.equal(pair.a,pair.b,'Passphrase input values diverged');assert.ok(pair.a.length>=12);await page.locator('#vaultAction').click();
  await page.locator('#vaultNew').waitFor({timeout:12000}).catch(async e=>{throw Error('Vault creation failed: '+await page.locator('#journalRoot').innerText()+'; browser: '+errors.join('; ').slice(0,1200))});
  await page.locator('#vaultNew').click();
  const marker='PRIVATE_ACCEPTANCE_MARKER_'+Date.now();
