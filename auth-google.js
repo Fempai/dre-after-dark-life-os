@@ -42,6 +42,10 @@ async function syncNow(){
  const x=document.getElementById('cloudState');if(x)x.textContent='Syncing Life OS to Supabase…';
  const snapshot=localState()||{};if((Array.isArray(snapshot.journal)&&snapshot.journal.length)||(Array.isArray(snapshot.journal?.entries)&&snapshot.journal.entries.length))return paintError('Cloud sync blocked: migrate plaintext journal entries into your encrypted vault first.');
  if(snapshot.journalVault&&(!snapshot.journalRecovery||!snapshot.journalRecoveryAccess))return paintError('Cloud sync blocked: encrypted journal recovery data is incomplete.');
+ const prior=await client.from('life_os_profiles').select('settings').eq('user_id',session.user.id).maybeSingle();
+ if(prior.error)return paintError('Cloud preflight failed: '+prior.error.message);
+ if(prior.data?.settings?.life_os?.journalVault&&!snapshot.journalVault)return paintError('Sync blocked: cloud contains an encrypted journal vault but this browser does not. No cloud data was changed.');
+ if(!snapshot.journalVault&&prior.data?.settings?.life_os&&!prior.data.settings.life_os.journalVault)return paintError('Sync blocked: neither this browser nor the cloud snapshot contains an encrypted journal vault. Check your original journal browser before syncing.');
  const {error}=await client.from('life_os_profiles').upsert({user_id:session.user.id,settings:{life_os:snapshot},updated_at:new Date().toISOString()},{onConflict:'user_id'});
  if(error)return paintError(error.message);
  const verify=await client.from('life_os_profiles').select('settings,updated_at').eq('user_id',session.user.id).maybeSingle();
